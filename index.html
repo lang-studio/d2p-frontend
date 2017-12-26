@@ -26,23 +26,28 @@
         }
 
         .hover-card {
-            border: 1px dashed black;
-            height: 96px;
-            width: 312px;
+            /*border: 1px dashed black;*/
+            height: 72px;
+            min-width: 256px;
             position: absolute;
-            background-color: aliceblue;
+            background-color: white;
+            font-size: 12px;
         }
 
         .hover-card-thumbnail {
-            height: 96px;
-            width: 96px;
+            height: 72px;
+            width: 72px;
             position: absolute;
         }
 
         .hover-card-content-wrapper {
             position: absolute;
-            left: 100px;
+            left: 80px;
             padding: 5px;
+        }
+
+        .hover-card-star {
+            color: orange;
         }
 
     </style>
@@ -75,7 +80,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8aYptivVN3ikaxl5H0dK_clsnSO4MLGE"></script>
 
 <script>
-    // custom js code
     InfoWindow.prototype = new google.maps.OverlayView();
     const overlays = [];
     const markers = [];
@@ -88,13 +92,15 @@
                 name: "Glasgow",
                 lat: 55.8642,
                 lng: -4.2518,
-                img: "http://localhost:8000/images/scotland-thumbnail.jpg"
+                img: "http://localhost:8000/images/scotland-thumbnail.jpg",
+                star_rating: 5
             },
             {
                 name: "Edinburgh",
                 lat: 55.9533,
                 lng: -3.1883,
-                img: "http://localhost:8000/images/scotland-thumbnail.jpg"
+                img: "http://localhost:8000/images/scotland-thumbnail.jpg",
+                star_rating: 4
             }
         ];
 
@@ -110,7 +116,7 @@
             const latLng = new google.maps.LatLng(d['lat'], d['lng']);
 
             // prepare popup on mouseover
-            overlays.push(new InfoWindow(d['name'], latLng, d['img'], map));
+            overlays.push(new InfoWindow(latLng, d, map));
 
             markers.push(new google.maps.Marker({
                 position: latLng,
@@ -133,11 +139,11 @@
         map.setCenter(bounds.getCenter());
     }
 
-    function InfoWindow(name, anchor, image, map) {
+    function InfoWindow(anchor, d, map) {
         this.anchor_ = anchor;
-        this.image_ = image;
-        this.map_ = map;
-        this.name_ = name;
+        this.image_ = d['img'];
+        this.name_ = d['name'];
+        this.starRating_ = d['star_rating'];
 
         this.div_ = null;
 
@@ -157,12 +163,17 @@
         // content div
         const contentWrapperDiv = document.createElement('div');
         contentWrapperDiv.setAttribute('class', 'hover-card-content-wrapper');
+
         const contentDiv = document.createElement('div');
         contentDiv.setAttribute('class', 'hover-card-content');
         contentDiv.innerText = this.name_;
         contentWrapperDiv.appendChild(contentDiv);
 
-        // todo: star rating div
+        // todo: half stars, with rating number
+        const starRatingDiv = document.createElement('div');
+        starRatingDiv.setAttribute('class', 'hover-card-star');
+        starRatingDiv.innerText = '★'.repeat(this.starRating_);
+        contentWrapperDiv.appendChild(starRatingDiv);
 
         div.appendChild(contentWrapperDiv);
 
@@ -181,8 +192,6 @@
         // todo: auto calculate offset according to screen boundary
         div.style.left = anchor.x + 'px';
         div.style.top = anchor.y + 'px';
-        div.style.width = '312px';
-        div.style.height = '96px';
         div.style.visibility = 'hidden';
     };
 
