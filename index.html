@@ -157,7 +157,7 @@
                 name: "Glasgow",
                 lat: 55.8642,
                 lng: -4.2518,
-                thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
+                thumbnail: "http://localhost:8000/images/glasgow-thumbnail.jpeg",
                 star_rating: 4.9,
                 description: "A city in Scotland"
             },
@@ -275,7 +275,7 @@
         const anchor = overlayProjection.fromLatLngToDivPixel(this.anchor_);
 
         const div = this.div_;
-        // todo: auto calculate offset according to screen boundary
+        // todo: auto calculate offset according to screen boundary and left pane
         div.style.left = anchor.x + 'px';
         div.style.top = anchor.y + 'px';
         div.style.visibility = 'hidden';

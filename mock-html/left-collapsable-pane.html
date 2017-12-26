@@ -8,23 +8,23 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        .widget-pane {
+        .left-pane {
             position: absolute;
             width: 312px;
             top: 0;
             left: 0;
-            z-index: 3;
+            z-index: 1;
             transform: translateX(0px);
             transition-property: -webkit-transform, transform, opacity;
             transition-duration: 0.2s;
             transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
         }
 
-        .widget-pane-collapsed {
+        .left-pane-collapsed {
             transform: translateX(-312px);
         }
 
-        .widget-pane-toggle-button-container {
+        .left-pane-toggle-button-container {
             display: block;
             position: absolute;
             z-index: 0;
@@ -32,7 +32,7 @@
             left: 100%;
         }
 
-        .widget-pane-toggle-button {
+        .left-pane-toggle-button {
             width: 23px;
             height: 48px;
             cursor: pointer;
@@ -41,8 +41,16 @@
             box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .widget-pane-collapsed .widget-pane-toggle-button {
+        .left-pane-collapsed .left-pane-toggle-button {
             transform: scaleX(-1);
+        }
+
+        .card-title{
+            font-size: 18px;
+        }
+
+        .card-body{
+            font-size: 12px;
         }
 
 
@@ -56,10 +64,10 @@
 <body>
 
 
-<div class="widget-pane widget-pane-visible" id="left-info-pane">
+<div class="left-pane left-pane-visible" id="left-info-pane">
 
-    <div class="widget-pane-content-holder">
-        <div class="card" id="t2">
+    <div class="left-pane-content-holder">
+        <div class="card">
             <img class="card-img-top" src="http://localhost:8000/images/scotland-thumbnail.jpg" alt="Card image cap">
             <div class="card-body">
                 <h4 class="card-title">Card title</h4>
@@ -69,8 +77,8 @@
             </div>
         </div>
     </div>
-    <div class="widget-pane-toggle-button-container">
-        <button type="button" class="widget-pane-toggle-button"></button>
+    <div class="left-pane-toggle-button-container">
+        <button type="button" class="left-pane-toggle-button"></button>
     </div>
 </div>
 
@@ -86,14 +94,14 @@
         crossorigin="anonymous"></script>
 
 <script>
-    $(".widget-pane-toggle-button").click(function () {
+    $(".left-pane-toggle-button").click(function () {
         const e = $("#left-info-pane");
-        if (e.hasClass('widget-pane-collapsed')) {
+        if (e.hasClass('left-pane-collapsed')) {
             // already collapsed, show again
-            e.removeClass('widget-pane-collapsed');
+            e.removeClass('left-pane-collapsed');
         } else {
             // collapse
-            e.addClass('widget-pane-collapsed');
+            e.addClass('left-pane-collapsed');
         }
     })
 </script>
