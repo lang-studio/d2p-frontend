@@ -50,6 +50,52 @@
             color: orange;
         }
 
+        /* left panel style below */
+        .left-pane {
+            position: absolute;
+            width: 312px;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transform: translateX(0px);
+            transition-property: -webkit-transform, transform, opacity;
+            transition-duration: 0.2s;
+            transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+        }
+
+        .left-pane-collapsed {
+            transform: translateX(-312px);
+        }
+
+        .left-pane-toggle-button-container {
+            display: block;
+            position: absolute;
+            z-index: 0;
+            top: 8px;
+            left: 100%;
+        }
+
+        .left-pane-toggle-button {
+            width: 23px;
+            height: 48px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.9) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUCAQAAAAXDMSnAAAAi0lEQVR4AX3JQcqBURQG4O/+9WNG30D3vOfSDTuQsgcZyBakZANSzMVMBme3zsBI5/VMn4ZKLP5ki1E4tYejWpilxVUtzOEUD68odYmXR5BJNp/4zllXD2phllYvamHmirsayUkfJ5ruHzueTldC08kcT5YOY9xYujqQM03XKXuaLmEtNF1e1Nz89gbL+0do6OEwRwAAAABJRU5ErkJggg==) 7px center/7px 10px no-repeat;
+            border-left: 1px solid #D4D4D4;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .left-pane-collapsed .left-pane-toggle-button {
+            transform: scaleX(-1);
+        }
+
+        .card-title{
+            font-size: 18px;
+        }
+
+        .card-body{
+            font-size: 12px;
+        }
+
     </style>
 
 </head>
@@ -64,6 +110,23 @@
         <div class="col-3">
             plan view
         </div>
+    </div>
+
+</div>
+
+<div class="left-pane left-pane-visible left-pane-collapsed" id="left-info-pane">
+
+    <div class="left-pane-content-holder">
+        <div class="card">
+            <img class="card-img-top" id="left-pane-card-img" src="">
+            <div class="card-body">
+                <h4 class="card-title" id="left-pane-card-title"></h4>
+                <p class="card-text" id="left-pane-card-text"></p>
+            </div>
+        </div>
+    </div>
+    <div class="left-pane-toggle-button-container">
+        <button type="button" class="left-pane-toggle-button"></button>
     </div>
 </div>
 
@@ -84,6 +147,8 @@
     const overlays = [];
     const markers = [];
 
+    $('.left-pane-toggle-button-container').hide();
+
     function initMap() {
 
         // server side return
@@ -92,15 +157,17 @@
                 name: "Glasgow",
                 lat: 55.8642,
                 lng: -4.2518,
-                img: "http://localhost:8000/images/scotland-thumbnail.jpg",
-                star_rating: 5
+                thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
+                star_rating: 4.9,
+                description: "A city in Scotland"
             },
             {
                 name: "Edinburgh",
                 lat: 55.9533,
                 lng: -3.1883,
-                img: "http://localhost:8000/images/scotland-thumbnail.jpg",
-                star_rating: 4
+                thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
+                star_rating: 4,
+                description: "Another city in Scotland"
             }
         ];
 
@@ -108,6 +175,7 @@
         const map = new google.maps.Map($('#map')[0], {
             zoom: 10,
             center: new google.maps.LatLng(0, 0),
+            disableDefaultUI: true
         });
         // add markers and center map
         let bounds = new google.maps.LatLngBounds();
@@ -133,6 +201,24 @@
                 overlays[this.id].hide();
             });
 
+            markers[i].addListener('click', function () {
+                // hide overlay
+                overlays[this.id].hide();
+                // enable the left pane toggler
+                $(".left-pane-toggle-button-container").show();
+                // update left info pane values
+                $("#left-pane-card-title").text(data[i]['name']);
+                $("#left-pane-card-text").text(data[i]['description']);
+                $("#left-pane-card-img").attr('src', data[i]['thumbnail']);
+                // show left info pane
+                const e = $("#left-info-pane");
+                if (e.hasClass('left-pane-collapsed')) {
+                    // already collapsed, show again
+                    e.removeClass('left-pane-collapsed');
+                }
+
+            });
+
             bounds = bounds.extend(latLng);
         }
         map.fitBounds(bounds);
@@ -141,7 +227,7 @@
 
     function InfoWindow(anchor, d, map) {
         this.anchor_ = anchor;
-        this.image_ = d['img'];
+        this.image_ = d['thumbnail'];
         this.name_ = d['name'];
         this.starRating_ = d['star_rating'];
 
@@ -172,7 +258,7 @@
         // todo: half stars, with rating number
         const starRatingDiv = document.createElement('div');
         starRatingDiv.setAttribute('class', 'hover-card-star');
-        starRatingDiv.innerText = '★'.repeat(this.starRating_);
+        starRatingDiv.innerText = this.starRating_ + '   ' + '★'.repeat(Math.round(this.starRating_));
         contentWrapperDiv.appendChild(starRatingDiv);
 
         div.appendChild(contentWrapperDiv);
@@ -208,6 +294,18 @@
     };
 
     google.maps.event.addDomListener(window, 'load', initMap);
+
+    // left pane toggle
+    $(".left-pane-toggle-button").click(function () {
+        const e = $("#left-info-pane");
+        if (e.hasClass('left-pane-collapsed')) {
+            // already collapsed, show again
+            e.removeClass('left-pane-collapsed');
+        } else {
+            // collapse
+            e.addClass('left-pane-collapsed');
+        }
+    });
 
 </script>
 </body>
