@@ -123,7 +123,7 @@
             border-radius: 3px;
         }
 
-        .list-content{
+        .list-content {
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -132,12 +132,12 @@
             white-space: normal;
         }
 
-        .list-header{
+        .list-header {
             min-height: 18px;
             padding: 8px 10px;
         }
 
-        .list-cards{
+        .list-cards {
             z-index: 1;
             margin: 0 4px;
             padding: 0 4px;
@@ -156,7 +156,7 @@
         }
 
         .list-card.ui-droppable {
-            background-color: #cccccc ;
+            background-color: #cccccc;
         }
 
         .list-card.ui-droppable.dropaccept {
@@ -173,7 +173,6 @@
             word-wrap: break-word;
             color: #4d4d4d;
         }
-
 
 
     </style>
@@ -195,8 +194,12 @@
                     <div class="list-header">Scotland</div>
                     <div class="list-cards">
 
-                        <div id="list-cards-dynamic">
+                        <div id="vue-dragged-cards">
                             <!-- populated by code -->
+                            <dragged-card
+                                    v-for="card in draggedCards"
+                                    v-bind:card="card">
+                            </dragged-card>
                         </div>
 
 
@@ -211,8 +214,6 @@
                     </div>
                 </div>
             </div>
-
-
 
 
             <div class="dropzone">
@@ -254,6 +255,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8aYptivVN3ikaxl5H0dK_clsnSO4MLGE"></script>
 <script src="resources/js/richmarker-compiled.js"></script>
 <script src="resources/js/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
 <script>
 
@@ -371,29 +373,23 @@
         });
     }
 
-    function createCard(text){
-        /*
-        <a class="list-card">
+    Vue.component('dragged-card', {
+        props: ['card'],
+        template: `<a class="list-card">
             <div class="list-card-details">
                 <span class="list-card-title">
-                    Edinburgh
+                    {{ card.text }}
                 </span>
             </div>
-        </a>
-        */
-        const e = document.createElement("a");
-        e.setAttribute("class", "list-card");
-        const div = document.createElement("div");
-        div.setAttribute("class", "list-card-details");
-        const span = document.createElement("span");
-        span.setAttribute("class", "list-card-title");
-        span.innerText = text;
+        </a>`
+    });
 
-        div.append(span);
-        e.append(div);
-
-        return e
-    }
+    var app1 = new Vue({
+        el: '#vue-dragged-cards',
+        data: {
+            draggedCards: []
+        }
+    });
 
     $(".ui-droppable").droppable({
         accept: ".marker-draggable",
@@ -402,11 +398,7 @@
         drop: function (event, ui) {
             const id = ui.draggable.attr("destination-id");
             const d = data[id];
-            // construct element
-            const e = createCard(d['name']);
-            console.log(e);
-            document.getElementById("list-cards-dynamic").appendChild(e);
-            //e.appendTo($("#list-card-dynamic"));
+            app1.draggedCards.push({text: d['name']});
         }
     });
 
