@@ -94,12 +94,35 @@
             transform: scaleX(-1);
         }
 
-        .card-title{
+        .card-title {
             font-size: 18px;
         }
 
-        .card-body{
+        .card-body {
             font-size: 12px;
+        }
+
+        /* drag drop below */
+        .gmarker {
+            width: 32px;
+            height: 32px;
+            background-image: url("dev-resources/images/map-marker.png");
+            background-size: cover;
+            cursor: pointer;
+        }
+
+        #dropzone {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+
+        #dropzone.drophere {
+            background-color: yellow
+        }
+
+        #dropzone.dropaccept {
+            background-color: green
         }
 
     </style>
@@ -115,7 +138,9 @@
             </div>
         </div>
         <div class="col-3">
-            plan view
+            <div id="dropzone">
+
+            </div>
         </div>
     </div>
 
@@ -139,8 +164,9 @@
 </div>
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
         integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
@@ -149,16 +175,19 @@
         integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
         crossorigin="anonymous"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8aYptivVN3ikaxl5H0dK_clsnSO4MLGE"></script>
+<script src="resources/js/richmarker-compiled.js"></script>
+<script src="resources/js/jquery-ui.min.js"></script>
 
 <script>
     InfoWindow.prototype = new google.maps.OverlayView();
-    const overlays = [];
-    const markers = [];
 
     // hide toggle button (we don't have data to render on load)
     $('.left-pane-toggle-button-container').hide();
 
     function initMap() {
+
+        const overlays = [];
+        const markers = [];
 
         // server side return
         const data = [
@@ -183,8 +212,7 @@
 
         const map = new google.maps.Map($('#map')[0], {
             zoom: 10,
-            center: new google.maps.LatLng(0, 0),
-            disableDefaultUI: true
+            center: new google.maps.LatLng(0, 0)
         });
         // add markers and center map
         let bounds = new google.maps.LatLngBounds();
@@ -195,19 +223,32 @@
             // prepare popup on mouseover
             overlays.push(new InfoWindow(latLng, d, map));
 
-            markers.push(new google.maps.Marker({
-                position: latLng,
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = '<div class="gmarker"></div>';
+
+            markers.push(new RichMarker({
                 map: map,
-                title: d['name'],
+                position: latLng,
+                draggable: false,
+                flat: true,
+                content: contentDiv,
                 id: i
             }));
 
             markers[i].addListener('mouseover', function (e) {
                 overlays[this.id].show();
+                // disable map draggling
+                map.setOptions({
+                    draggable: false
+                });
             });
 
             markers[i].addListener('mouseout', function () {
                 overlays[this.id].hide();
+                // enable map draggling
+                map.setOptions({
+                    draggable: true
+                })
             });
 
             markers[i].addListener('click', function () {
@@ -233,7 +274,34 @@
         }
         map.fitBounds(bounds);
         map.setCenter(bounds.getCenter());
+
+        setMarkerDraggable(markers);
+
     }
+
+    function setMarkerDraggable(markers) {
+        $(markers).each(function () {
+            const markerInDOM = this.getContent();
+            $(markerInDOM).addClass('marker-draggable');
+            $(markerInDOM).draggable({
+                zIndex: 2,
+                appendTo: 'body',
+                helper: 'clone',
+                containment: 'body'
+            });
+        });
+    }
+
+    $("#dropzone").droppable({
+        accept: ".marker-draggable",
+        activeClass: "drophere",
+        hoverClass: "dropaccept",
+        drop: function (event, ui) {
+            $(this)
+                .addClass("ui-state-highlight")
+                .html("Dropped!");
+        }
+    });
 
     // InfoWindow is a `Overlay` object, see https://developers.google.com/maps/documentation/javascript/customoverlays
     function InfoWindow(anchor, d, map) {
