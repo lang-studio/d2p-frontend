@@ -111,19 +111,76 @@
             cursor: pointer;
         }
 
-        #dropzone {
-            width: 100px;
-            height: 100px;
-            background-color: red;
+        /* dropzone debug styles */
+        .list-wrapper {
+            width: 270px;
+            margin: 0 5px;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: inline-block;
+            vertical-align: top;
+            white-space: nowrap;
+            background: #e2e4e6;
+            border-radius: 3px;
         }
 
-        #dropzone.drophere {
-            background-color: yellow
+        .list-content{
+            background: #e2e4e6;
+            border-radius: 3px;
+            box-sizing: border-box;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            flex-direction: column;
+            max-height: 100%;
+            position: relative;
+            white-space: normal;
         }
 
-        #dropzone.dropaccept {
-            background-color: green
+        .list-header{
+            min-height: 18px;
+            padding: 8px 10px;
         }
+
+        .list-cards{
+            z-index: 1;
+            margin: 0 4px;
+            padding: 0 4px;
+        }
+
+        .list-card {
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+            border-radius: 3px;
+            cursor: pointer;
+            display: block;
+            margin-bottom: 6px;
+            max-width: 300px;
+            min-height: 20px;
+            text-decoration: none;
+        }
+
+        .list-card.ui-droppable {
+            background-color: #cccccc ;
+        }
+
+        .list-card.ui-droppable.dropaccept {
+            background-color: orange;
+        }
+
+        .list-card-title {
+            clear: both;
+            display: block;
+            margin: 0 0 4px;
+            padding: 6px 6px 2px 8px;
+            overflow: hidden;
+            text-decoration: none;
+            word-wrap: break-word;
+            color: #4d4d4d;
+        }
+
+
 
     </style>
 
@@ -138,7 +195,31 @@
             </div>
         </div>
         <div class="col-3">
-            <div id="dropzone">
+
+            <div class="list-wrapper">
+                <div class="list-content">
+                    <div class="list-header">Scotland</div>
+                    <div class="list-cards">
+
+                        <div id="list-cards-dynamic">
+                            <!-- populated by code -->
+                        </div>
+
+
+                        <a class="list-card ui-droppable">
+                            <div class="list-card-details">
+                                <span class="list-card-title">
+                                    Drop Marker here
+                                </span>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="dropzone">
 
             </div>
         </div>
@@ -179,10 +260,30 @@
 <script src="resources/js/jquery-ui.min.js"></script>
 
 <script>
+
     InfoWindow.prototype = new google.maps.OverlayView();
 
     // hide toggle button (we don't have data to render on load)
     $('.left-pane-toggle-button-container').hide();
+
+    const data = [
+        {
+            name: "Glasgow",
+            lat: 55.8642,
+            lng: -4.2518,
+            thumbnail: "http://localhost:8000/images/glasgow-thumbnail.jpeg",
+            star_rating: 4.9,
+            description: "A city in Scotland"
+        },
+        {
+            name: "Edinburgh",
+            lat: 55.9533,
+            lng: -3.1883,
+            thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
+            star_rating: 4,
+            description: "Another city in Scotland"
+        }
+    ];
 
     function initMap() {
 
@@ -190,25 +291,6 @@
         const markers = [];
 
         // server side return
-        const data = [
-            {
-                name: "Glasgow",
-                lat: 55.8642,
-                lng: -4.2518,
-                thumbnail: "http://localhost:8000/images/glasgow-thumbnail.jpeg",
-                star_rating: 4.9,
-                description: "A city in Scotland"
-            },
-            {
-                name: "Edinburgh",
-                lat: 55.9533,
-                lng: -3.1883,
-                thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
-                star_rating: 4,
-                description: "Another city in Scotland"
-            }
-        ];
-
 
         const map = new google.maps.Map($('#map')[0], {
             zoom: 10,
@@ -293,12 +375,42 @@
         });
     }
 
-    $("#dropzone").droppable({
+    function createCard(text){
+        /*
+        <a class="list-card">
+            <div class="list-card-details">
+                <span class="list-card-title">
+                    Edinburgh
+                </span>
+            </div>
+        </a>
+        */
+        const e = document.createElement("a");
+        e.setAttribute("class", "list-card");
+        const div = document.createElement("div");
+        div.setAttribute("class", "list-card-details");
+        const span = document.createElement("span");
+        span.setAttribute("class", "list-card-title");
+        span.innerText = text;
+
+        div.append(span);
+        e.append(div);
+
+        return e
+    }
+
+    $(".ui-droppable").droppable({
         accept: ".marker-draggable",
-        activeClass: "drophere",
+        //activeClass: "drophere",
         hoverClass: "dropaccept",
         drop: function (event, ui) {
-            console.log(ui.draggable.attr("destination-id"));
+            const id = ui.draggable.attr("destination-id");
+            const d = data[id];
+            // construct element
+            const e = createCard(d['name']);
+            console.log(e);
+            document.getElementById("list-cards-dynamic").appendChild(e);
+            //e.appendTo($("#list-card-dynamic"));
         }
     });
 
