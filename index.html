@@ -17,12 +17,18 @@
             height: 100%;
         }
 
-        .row {
+        .row { /* debug only */
             border: 1px dotted black;
         }
 
         html {
             font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+            position: relative;
         }
 
         .hover-card {
@@ -102,6 +108,7 @@
 <body>
 
 <div class="container-fluid h-100">
+
     <div class="row h-100 no-gutters">
         <div class="col-9">
             <div id="map">
@@ -114,6 +121,7 @@
 
 </div>
 
+<!-- left pane todo: we should put in one div as container i think -->
 <div class="left-pane left-pane-visible left-pane-collapsed" id="left-info-pane">
 
     <div class="left-pane-content-holder">
@@ -147,6 +155,7 @@
     const overlays = [];
     const markers = [];
 
+    // hide toggle button (we don't have data to render on load)
     $('.left-pane-toggle-button-container').hide();
 
     function initMap() {
@@ -202,6 +211,7 @@
             });
 
             markers[i].addListener('click', function () {
+                // todo: if left-pane blocks the marker, re-center the map
                 // hide overlay
                 overlays[this.id].hide();
                 // enable the left pane toggler
@@ -225,6 +235,7 @@
         map.setCenter(bounds.getCenter());
     }
 
+    // InfoWindow is a `Overlay` object, see https://developers.google.com/maps/documentation/javascript/customoverlays
     function InfoWindow(anchor, d, map) {
         this.anchor_ = anchor;
         this.image_ = d['thumbnail'];
@@ -239,6 +250,8 @@
     InfoWindow.prototype.onAdd = function () {
         const div = document.createElement('div');
         div.setAttribute('class', 'hover-card');
+
+        // below constructs the html for hover card, see mock-html/hover-card.html
 
         // Create the img element and attach it to the div.
         const img = document.createElement('img');
@@ -295,7 +308,7 @@
 
     google.maps.event.addDomListener(window, 'load', initMap);
 
-    // left pane toggle
+    // left pane toggle button
     $(".left-pane-toggle-button").click(function () {
         const e = $("#left-info-pane");
         if (e.hasClass('left-pane-collapsed')) {
