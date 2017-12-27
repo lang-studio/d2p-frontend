@@ -282,6 +282,7 @@
     function setMarkerDraggable(markers) {
         $(markers).each(function () {
             const markerInDOM = this.getContent();
+            $(markerInDOM).attr("destination-id", this.id);
             $(markerInDOM).addClass('marker-draggable');
             $(markerInDOM).draggable({
                 zIndex: 2,
@@ -297,9 +298,7 @@
         activeClass: "drophere",
         hoverClass: "dropaccept",
         drop: function (event, ui) {
-            $(this)
-                .addClass("ui-state-highlight")
-                .html("Dropped!");
+            console.log(ui.draggable.attr("destination-id"));
         }
     });
 
