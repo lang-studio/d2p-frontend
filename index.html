@@ -7,11 +7,8 @@
     <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="gmap-util.css">
     <style>
-        #map {
-            width: 100%;
-            height: 100%;
-        }
 
         html, body {
             height: 100%;
@@ -29,86 +26,6 @@
             padding-left: 0;
             padding-right: 0;
             position: relative;
-        }
-
-        .hover-card {
-            /*border: 1px dashed black;*/
-            height: 72px;
-            min-width: 256px;
-            position: absolute;
-            background-color: white;
-            font-size: 12px;
-        }
-
-        .hover-card-thumbnail {
-            height: 72px;
-            width: 72px;
-            position: absolute;
-        }
-
-        .hover-card-content-wrapper {
-            position: absolute;
-            left: 80px;
-            padding: 5px;
-        }
-
-        .hover-card-star {
-            color: orange;
-        }
-
-        /* left panel style below */
-        .left-pane {
-            position: absolute;
-            width: 312px;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            transform: translateX(0px);
-            transition-property: -webkit-transform, transform, opacity;
-            transition-duration: 0.2s;
-            transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
-        }
-
-        .left-pane-collapsed {
-            transform: translateX(-312px);
-        }
-
-        .left-pane-toggle-button-container {
-            display: block;
-            position: absolute;
-            z-index: 0;
-            top: 8px;
-            left: 100%;
-        }
-
-        .left-pane-toggle-button {
-            width: 23px;
-            height: 48px;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.9) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUCAQAAAAXDMSnAAAAi0lEQVR4AX3JQcqBURQG4O/+9WNG30D3vOfSDTuQsgcZyBakZANSzMVMBme3zsBI5/VMn4ZKLP5ki1E4tYejWpilxVUtzOEUD68odYmXR5BJNp/4zllXD2phllYvamHmirsayUkfJ5ruHzueTldC08kcT5YOY9xYujqQM03XKXuaLmEtNF1e1Nz89gbL+0do6OEwRwAAAABJRU5ErkJggg==) 7px center/7px 10px no-repeat;
-            border-left: 1px solid #D4D4D4;
-            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .left-pane-collapsed .left-pane-toggle-button {
-            transform: scaleX(-1);
-        }
-
-        .card-title {
-            font-size: 18px;
-        }
-
-        .card-body {
-            font-size: 12px;
-        }
-
-        /* drag drop below */
-        .gmarker {
-            width: 32px;
-            height: 32px;
-            background-image: url("dev-resources/images/map-marker.png");
-            background-size: cover;
-            cursor: pointer;
         }
 
         /* dropzone debug styles */
@@ -153,6 +70,11 @@
             max-width: 300px;
             min-height: 20px;
             text-decoration: none;
+        }
+
+        .list-card.active-card {
+            background-color: #edeff0;
+            border-bottom-color: #d6dadc;
         }
 
         .list-card.ui-droppable {
@@ -256,13 +178,11 @@
 <script src="resources/js/richmarker-compiled.js"></script>
 <script src="resources/js/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<!-- custom scripts below -->
+<script src="gmap-util.js"></script>
 
 <script>
 
-    InfoWindow.prototype = new google.maps.OverlayView();
-
-    // hide toggle button (we don't have data to render on load)
-    $('.left-pane-toggle-button-container').hide();
 
     const data = [
         {
@@ -282,96 +202,6 @@
             description: "Another city in Scotland"
         }
     ];
-
-    function initMap() {
-
-        const overlays = [];
-        const markers = [];
-
-        // server side return
-
-        const map = new google.maps.Map($('#map')[0], {
-            zoom: 10,
-            center: new google.maps.LatLng(0, 0)
-        });
-        // add markers and center map
-        let bounds = new google.maps.LatLngBounds();
-        for (let i = 0; i < data.length; i++) {
-            const d = data[i];
-            const latLng = new google.maps.LatLng(d['lat'], d['lng']);
-
-            // prepare popup on mouseover
-            overlays.push(new InfoWindow(latLng, d, map));
-
-            const contentDiv = document.createElement('div');
-            contentDiv.innerHTML = '<div class="gmarker"></div>';
-
-            markers.push(new RichMarker({
-                map: map,
-                position: latLng,
-                draggable: false,
-                flat: true,
-                content: contentDiv,
-                id: i
-            }));
-
-            markers[i].addListener('mouseover', function (e) {
-                overlays[this.id].show();
-                // disable map draggling
-                map.setOptions({
-                    draggable: false
-                });
-            });
-
-            markers[i].addListener('mouseout', function () {
-                overlays[this.id].hide();
-                // enable map draggling
-                map.setOptions({
-                    draggable: true
-                })
-            });
-
-            markers[i].addListener('click', function () {
-                // todo: if left-pane blocks the marker, re-center the map
-                // hide overlay
-                overlays[this.id].hide();
-                // enable the left pane toggler
-                $(".left-pane-toggle-button-container").show();
-                // update left info pane values
-                $("#left-pane-card-title").text(data[i]['name']);
-                $("#left-pane-card-text").text(data[i]['description']);
-                $("#left-pane-card-img").attr('src', data[i]['thumbnail']);
-                // show left info pane
-                const e = $("#left-info-pane");
-                if (e.hasClass('left-pane-collapsed')) {
-                    // already collapsed, show again
-                    e.removeClass('left-pane-collapsed');
-                }
-
-            });
-
-            bounds = bounds.extend(latLng);
-        }
-        map.fitBounds(bounds);
-        map.setCenter(bounds.getCenter());
-
-        setMarkerDraggable(markers);
-
-    }
-
-    function setMarkerDraggable(markers) {
-        $(markers).each(function () {
-            const markerInDOM = this.getContent();
-            $(markerInDOM).attr("destination-id", this.id);
-            $(markerInDOM).addClass('marker-draggable');
-            $(markerInDOM).draggable({
-                zIndex: 2,
-                appendTo: 'body',
-                helper: 'clone',
-                containment: 'body'
-            });
-        });
-    }
 
     Vue.component('dragged-card', {
         props: ['card'],
@@ -402,90 +232,7 @@
         }
     });
 
-    // InfoWindow is a `Overlay` object, see https://developers.google.com/maps/documentation/javascript/customoverlays
-    function InfoWindow(anchor, d, map) {
-        this.anchor_ = anchor;
-        this.image_ = d['thumbnail'];
-        this.name_ = d['name'];
-        this.starRating_ = d['star_rating'];
-
-        this.div_ = null;
-
-        this.setMap(map);
-    }
-
-    InfoWindow.prototype.onAdd = function () {
-        const div = document.createElement('div');
-        div.setAttribute('class', 'hover-card');
-
-        // below constructs the html for hover card, see mock-html/hover-card.html
-
-        // Create the img element and attach it to the div.
-        const img = document.createElement('img');
-        img.setAttribute('class', 'hover-card-thumbnail');
-        img.src = this.image_;
-        div.appendChild(img);
-
-        // content div
-        const contentWrapperDiv = document.createElement('div');
-        contentWrapperDiv.setAttribute('class', 'hover-card-content-wrapper');
-
-        const contentDiv = document.createElement('div');
-        contentDiv.setAttribute('class', 'hover-card-content');
-        contentDiv.innerText = this.name_;
-        contentWrapperDiv.appendChild(contentDiv);
-
-        // todo: half stars, with rating number
-        const starRatingDiv = document.createElement('div');
-        starRatingDiv.setAttribute('class', 'hover-card-star');
-        starRatingDiv.innerText = this.starRating_ + '   ' + '★'.repeat(Math.round(this.starRating_));
-        contentWrapperDiv.appendChild(starRatingDiv);
-
-        div.appendChild(contentWrapperDiv);
-
-        this.div_ = div;
-
-        // Add the element to the "overlayLayer" pane.
-        const panes = this.getPanes();
-        panes.overlayLayer.appendChild(div);
-    };
-
-    InfoWindow.prototype.draw = function () {
-        const overlayProjection = this.getProjection();
-        const anchor = overlayProjection.fromLatLngToDivPixel(this.anchor_);
-
-        const div = this.div_;
-        // todo: auto calculate offset according to screen boundary and left pane
-        div.style.left = anchor.x + 'px';
-        div.style.top = anchor.y + 'px';
-        div.style.visibility = 'hidden';
-    };
-
-    InfoWindow.prototype.hide = function () {
-        if (this.div_) {
-            this.div_.style.visibility = 'hidden';
-        }
-    };
-
-    InfoWindow.prototype.show = function () {
-        if (this.div_) {
-            this.div_.style.visibility = 'visible';
-        }
-    };
-
-    google.maps.event.addDomListener(window, 'load', initMap);
-
-    // left pane toggle button
-    $(".left-pane-toggle-button").click(function () {
-        const e = $("#left-info-pane");
-        if (e.hasClass('left-pane-collapsed')) {
-            // already collapsed, show again
-            e.removeClass('left-pane-collapsed');
-        } else {
-            // collapse
-            e.addClass('left-pane-collapsed');
-        }
-    });
+    google.maps.event.addDomListener(window, 'load', initMap(data));
 
 </script>
 </body>
