@@ -96,7 +96,6 @@
             color: #4d4d4d;
         }
 
-
     </style>
 
 </head>
@@ -178,7 +177,7 @@
 <script src="resources/js/richmarker-compiled.js"></script>
 <script src="resources/js/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-<!-- custom scripts below -->
+<!-- my scripts below -->
 <script src="gmap-util.js"></script>
 
 <script>
@@ -217,20 +216,35 @@
     var app1 = new Vue({
         el: '#vue-dragged-cards',
         data: {
-            draggedCards: []
+            draggedCards: [],
         }
     });
 
+    function containsId(arr, did){
+        for (let i = 0; i < arr.length; i++){
+            if (arr[i].destination_id === did){
+                return true;
+            }
+        }
+        return false
+    }
+
     $(".ui-droppable").droppable({
         accept: ".marker-draggable",
-        //activeClass: "drophere",
         hoverClass: "dropaccept",
         drop: function (event, ui) {
-            const id = ui.draggable.attr("destination-id");
-            const d = data[id];
-            app1.draggedCards.push({text: d['name']});
+            const did = ui.draggable.attr("destination-id");
+            const d = data[did];
+
+            if (!(containsId(app1.draggedCards, did))){
+                app1.draggedCards.push({text: d['name'], destination_id:did});
+            } else{
+                // todo flash-highlight the original card
+            }
         }
     });
+
+
 
     google.maps.event.addDomListener(window, 'load', initMap(data));
 
