@@ -125,6 +125,39 @@
             background-color: #4d4d4d;
         }
 
+        /* autocomplete */
+        .search-scope {
+            margin: 10px;
+            width: 50%;
+        }
+
+        #search-input{
+            border-color: blue;
+        }
+
+        #search-input.warning-flash{
+            animation-duration: 0.5s;
+            animation-name: warningflash;
+        }
+
+        @keyframes warningflash {
+            from {
+                border-color: red;
+                background-color: lightpink;
+            }
+            to {
+                border-color: blue;
+                background-color: white;
+            }
+        }
+
+        .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+        .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+        .autocomplete-selected { background: #F0F0F0; }
+        .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+        .autocomplete-group { padding: 2px 5px; }
+        .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
     </style>
 
 </head>
@@ -132,13 +165,21 @@
 
 <div class="container-fluid h-100">
 
-    <div class="row h-100 no-gutters">
-        <div class="col-9">
-            <div id="map">
+    <div class="row search-scope">
+        <div class="input-group" id="search-container">
+            <input type="text" id="search-input" class="form-control" placeholder="Next destination.." aria-label="Next destination">
+            <div class="input-group-append">
+                <button id="search-submit" class="btn btn-outline-info" type="button">Go</button>
             </div>
         </div>
-        <div class="col-3">
+    </div>
 
+    <div class="row">
+        <div class="col-9">
+            <div id="map"></div>
+        </div>
+
+        <div class="col-3">
             <div class="list-wrapper">
                 <div class="list-content">
                     <div class="list-header">Scotland</div>
@@ -208,6 +249,7 @@
 <script src="resources/js/richmarker-compiled.js"></script>
 <script src="resources/js/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="resources/js/jquery.autocomplete.min.js"></script>
 <!-- my scripts below -->
 <script src="gmap-util.js"></script>
 
@@ -232,6 +274,51 @@
             description: "Another city in Scotland"
         }
     ];
+
+    // autocomplete search
+    const mockAutocompleteResult = [
+        { value: 'Scotland', data: 1 } // data is destination_id
+    ];
+
+    let isValidSearch = false;
+    let lastSuggestion = null;
+
+    const searchSubmitBtn = document.getElementById('search-submit');
+    const searchInput = document.getElementById('search-input');
+
+    $('#search-input').devbridgeAutocomplete({
+        // todo: turn it into backend call
+        lookup: mockAutocompleteResult,
+        triggerSelectOnValidInput: false,
+        onSelect:function (suggestion) {
+            isValidSearch = true;
+            lastSuggestion = suggestion;
+        },
+        onInvalidateSelection:function () {
+            isValidSearch = false;
+            // flash input border to red?
+            // searchInput.classList.add('warning-flash');
+        }
+    });
+
+
+    searchSubmitBtn.addEventListener('click', function () {
+        if (isValidSearch){
+            console.log(lastSuggestion);
+            const destination_id = lastSuggestion.data;
+        } else {
+            searchInput.classList.add('warning-flash');
+        }
+    });
+    searchInput.addEventListener('animationend', function () {
+        this.classList.remove('warning-flash')
+    });
+
+    $("#search-input").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#search-submit").click();
+        }
+    });
 
     // component must be registered before instantiating vue instance
     Vue.component('dragged-card', {

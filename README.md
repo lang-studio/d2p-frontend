@@ -4,7 +4,7 @@
 ### Naming conventions
 main functionalities:
 - map related
-- 
+- autocomplete search: search-*
 
 ### TODO
 - ~~separate into different css/js files~~
