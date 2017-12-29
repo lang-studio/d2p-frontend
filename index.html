@@ -70,6 +70,7 @@
             max-width: 300px;
             min-height: 20px;
             text-decoration: none;
+            position: relative;
         }
 
         .list-card.active-card {
@@ -96,6 +97,30 @@
             color: #4d4d4d;
         }
 
+        .list-card-operation {
+            background-color: #edeff0;
+            background-clip: padding-box;
+            background-origin: padding-box;
+            border-radius: 3px;
+            opacity: .8;
+            padding: 4px;
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            visibility: hidden;
+        }
+
+        .list-card-operation.delete-icon {
+            background-image: url("dev-resources/images/delete-icon.png");
+            background-size: cover;
+            width: 20px;
+            height: 20px;
+        }
+
+        .list-card-operation.dark-hover {
+            visibility: visible;
+        }
+
     </style>
 
 </head>
@@ -116,6 +141,16 @@
                     <div class="list-cards">
 
                         <div id="vue-dragged-cards">
+
+                            <a class="list-card">
+                                <span class="list-card-operation delete-icon"></span>
+                                <div class="list-card-details">
+                                    <span class="list-card-title">
+                                        sample
+                                    </span>
+                                </div>
+                            </a>
+
                             <!-- populated by code -->
                             <dragged-card
                                     v-for="card in draggedCards"
@@ -202,21 +237,32 @@
         }
     ];
 
+    // component must be registered before instantiating vue instance
     Vue.component('dragged-card', {
         props: ['card'],
-        template: `<a class="list-card">
+        template: `<a class="list-card"
+                        @mouseover="isActiveCard=true"
+                        @mouseleave="isActiveCard=false"
+                        v-bind:class="{'active-card':isActiveCard}">
+            <span class="list-card-operation delete-icon"
+                    v-bind:class="{'dark-hover':isActiveCard}"></span>
             <div class="list-card-details">
                 <span class="list-card-title">
                     {{ card.text }}
                 </span>
             </div>
-        </a>`
+        </a>`,
+        data:function () {
+            return {
+                isActiveCard:false
+            }
+        }
     });
 
     var app1 = new Vue({
         el: '#vue-dragged-cards',
         data: {
-            draggedCards: [],
+            draggedCards: []
         }
     });
 
@@ -244,6 +290,16 @@
         }
     });
 
+    $(".list-card").hover(
+        function () {
+            $(this).addClass("active-card");
+            $(this).find(".list-card-operation:first").addClass("dark-hover");
+        },
+        function () {
+            $(this).removeClass("active-card");
+            $(this).find(".list-card-operation:first").removeClass("dark-hover");
+        }
+    );
 
 
     google.maps.event.addDomListener(window, 'load', initMap(data));
