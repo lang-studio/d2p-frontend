@@ -142,19 +142,11 @@
 
                         <div id="vue-dragged-cards">
 
-                            <a class="list-card">
-                                <span class="list-card-operation delete-icon"></span>
-                                <div class="list-card-details">
-                                    <span class="list-card-title">
-                                        sample
-                                    </span>
-                                </div>
-                            </a>
-
                             <!-- populated by code -->
                             <dragged-card
                                     v-for="card in draggedCards"
-                                    v-bind:card="card">
+                                    v-bind:card="card"
+                                    v-on:removecard="removeCard">
                             </dragged-card>
                         </div>
 
@@ -245,16 +237,22 @@
                         @mouseleave="isActiveCard=false"
                         v-bind:class="{'active-card':isActiveCard}">
             <span class="list-card-operation delete-icon"
-                    v-bind:class="{'dark-hover':isActiveCard}"></span>
+                    v-bind:class="{'dark-hover':isActiveCard}"
+                    v-on:click="removeMe"></span>
             <div class="list-card-details">
                 <span class="list-card-title">
                     {{ card.text }}
                 </span>
             </div>
         </a>`,
-        data:function () {
+        data: function () {
             return {
                 isActiveCard:false
+            }
+        },
+        methods: {
+            removeMe:function () {
+                this.$emit('removecard', this.card.destination_id);
             }
         }
     });
@@ -262,7 +260,12 @@
     var app1 = new Vue({
         el: '#vue-dragged-cards',
         data: {
-            draggedCards: []
+            draggedCards: [] // {text, destination_id}
+        },
+        methods:{
+            removeCard:function (did) {
+                this.draggedCards = this.draggedCards.filter(e => e.destination_id != did);
+            }
         }
     });
 
@@ -289,18 +292,6 @@
             }
         }
     });
-
-    $(".list-card").hover(
-        function () {
-            $(this).addClass("active-card");
-            $(this).find(".list-card-operation:first").addClass("dark-hover");
-        },
-        function () {
-            $(this).removeClass("active-card");
-            $(this).find(".list-card-operation:first").removeClass("dark-hover");
-        }
-    );
-
 
     google.maps.event.addDomListener(window, 'load', initMap(data));
 
