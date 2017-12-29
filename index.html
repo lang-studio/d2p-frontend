@@ -7,17 +7,14 @@
     <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="gmap-util.css">
     <style>
-        #map {
-            width: 100%;
-            height: 100%;
-        }
 
         html, body {
             height: 100%;
         }
 
-        .row {
+        .row { /* debug only */
             border: 1px dotted black;
         }
 
@@ -25,75 +22,107 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        .hover-card {
-            /*border: 1px dashed black;*/
-            height: 72px;
-            min-width: 256px;
-            position: absolute;
-            background-color: white;
-            font-size: 12px;
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+            position: relative;
         }
 
-        .hover-card-thumbnail {
-            height: 72px;
-            width: 72px;
-            position: absolute;
+        /* dropzone debug styles */
+        .list-wrapper {
+            width: 270px;
+            margin: 0 5px;
+            box-sizing: border-box;
+            display: inline-block;
+            vertical-align: top;
+            white-space: nowrap;
+            background: #e2e4e6;
+            border-radius: 3px;
         }
 
-        .hover-card-content-wrapper {
-            position: absolute;
-            left: 80px;
-            padding: 5px;
+        .list-content {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+            position: relative;
+            white-space: normal;
         }
 
-        .hover-card-star {
-            color: orange;
+        .list-header {
+            min-height: 18px;
+            padding: 8px 10px;
         }
 
-        /* left panel style below */
-        .left-pane {
-            position: absolute;
-            width: 312px;
-            top: 0;
-            left: 0;
+        .list-cards {
             z-index: 1;
-            transform: translateX(0px);
-            transition-property: -webkit-transform, transform, opacity;
-            transition-duration: 0.2s;
-            transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+            margin: 0 4px;
+            padding: 0 4px;
         }
 
-        .left-pane-collapsed {
-            transform: translateX(-312px);
-        }
-
-        .left-pane-toggle-button-container {
-            display: block;
-            position: absolute;
-            z-index: 0;
-            top: 8px;
-            left: 100%;
-        }
-
-        .left-pane-toggle-button {
-            width: 23px;
-            height: 48px;
+        .list-card {
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+            border-radius: 3px;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.9) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUCAQAAAAXDMSnAAAAi0lEQVR4AX3JQcqBURQG4O/+9WNG30D3vOfSDTuQsgcZyBakZANSzMVMBme3zsBI5/VMn4ZKLP5ki1E4tYejWpilxVUtzOEUD68odYmXR5BJNp/4zllXD2phllYvamHmirsayUkfJ5ruHzueTldC08kcT5YOY9xYujqQM03XKXuaLmEtNF1e1Nz89gbL+0do6OEwRwAAAABJRU5ErkJggg==) 7px center/7px 10px no-repeat;
-            border-left: 1px solid #D4D4D4;
-            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+            display: block;
+            margin-bottom: 6px;
+            max-width: 300px;
+            min-height: 20px;
+            text-decoration: none;
+            position: relative;
         }
 
-        .left-pane-collapsed .left-pane-toggle-button {
-            transform: scaleX(-1);
+        .list-card.active-card {
+            background-color: #edeff0;
+            border-bottom-color: #d6dadc;
         }
 
-        .card-title{
-            font-size: 18px;
+        .list-card.ui-droppable {
+            background-color: #cccccc;
         }
 
-        .card-body{
-            font-size: 12px;
+        .list-card.ui-droppable.dropaccept {
+            background-color: orange;
+        }
+
+        .list-card-title {
+            clear: both;
+            display: block;
+            margin: 0 0 4px;
+            padding: 6px 6px 2px 8px;
+            overflow: hidden;
+            text-decoration: none;
+            word-wrap: break-word;
+            color: #4d4d4d;
+        }
+
+        .list-card-operation {
+            background-color: #edeff0;
+            background-clip: padding-box;
+            background-origin: padding-box;
+            border-radius: 3px;
+            opacity: .8;
+            padding: 4px;
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            visibility: hidden;
+        }
+
+        .list-card-operation.delete-icon {
+            background-image: url("dev-resources/images/delete-icon.png");
+            background-size: cover;
+            width: 22px;
+            height: 22px;
+        }
+
+        .list-card-operation.active-card {
+            visibility: visible;
+        }
+
+        .list-card-operation.dark-hover {
+            background-color: #4d4d4d;
         }
 
     </style>
@@ -102,18 +131,52 @@
 <body>
 
 <div class="container-fluid h-100">
+
     <div class="row h-100 no-gutters">
         <div class="col-9">
             <div id="map">
             </div>
         </div>
         <div class="col-3">
-            plan view
+
+            <div class="list-wrapper">
+                <div class="list-content">
+                    <div class="list-header">Scotland</div>
+                    <div class="list-cards">
+
+                        <div id="vue-dragged-cards">
+
+                            <!-- populated by code -->
+                            <dragged-card
+                                    v-for="card in draggedCards"
+                                    v-bind:card="card"
+                                    v-on:removecard="removeCard">
+                            </dragged-card>
+                        </div>
+
+
+                        <a class="list-card ui-droppable">
+                            <div class="list-card-details">
+                                <span class="list-card-title">
+                                    Drop marker here
+                                </span>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="dropzone">
+
+            </div>
         </div>
     </div>
 
 </div>
 
+<!-- left pane todo: we should put in one div as container i think -->
 <div class="left-pane left-pane-visible left-pane-collapsed" id="left-info-pane">
 
     <div class="left-pane-content-holder">
@@ -131,8 +194,9 @@
 </div>
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
         integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
@@ -141,171 +205,103 @@
         integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
         crossorigin="anonymous"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8aYptivVN3ikaxl5H0dK_clsnSO4MLGE"></script>
+<script src="resources/js/richmarker-compiled.js"></script>
+<script src="resources/js/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<!-- my scripts below -->
+<script src="gmap-util.js"></script>
 
 <script>
-    InfoWindow.prototype = new google.maps.OverlayView();
-    const overlays = [];
-    const markers = [];
 
-    $('.left-pane-toggle-button-container').hide();
+    // mock data for now, to be replaced by server call
+    const data = [
+        {
+            name: "Glasgow",
+            lat: 55.8642,
+            lng: -4.2518,
+            thumbnail: "http://localhost:8000/images/glasgow-thumbnail.jpeg",
+            star_rating: 4.9,
+            description: "A city in Scotland"
+        },
+        {
+            name: "Edinburgh",
+            lat: 55.9533,
+            lng: -3.1883,
+            thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
+            star_rating: 4,
+            description: "Another city in Scotland"
+        }
+    ];
 
-    function initMap() {
-
-        // server side return
-        const data = [
-            {
-                name: "Glasgow",
-                lat: 55.8642,
-                lng: -4.2518,
-                thumbnail: "http://localhost:8000/images/glasgow-thumbnail.jpeg",
-                star_rating: 4.9,
-                description: "A city in Scotland"
-            },
-            {
-                name: "Edinburgh",
-                lat: 55.9533,
-                lng: -3.1883,
-                thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
-                star_rating: 4,
-                description: "Another city in Scotland"
+    // component must be registered before instantiating vue instance
+    Vue.component('dragged-card', {
+        props: ['card'],
+        template: `<a class="list-card"
+                        @mouseover="isActiveCard=true"
+                        @mouseleave="isActiveCard=false"
+                        v-bind:class="{'active-card':isActiveCard}">
+            <span class="list-card-operation delete-icon"
+                    @mouseover="hoverDelete=true"
+                    @mouseleave="hoverDelete=false"
+                    v-bind:class="{'active-card':isActiveCard, 'dark-hover':hoverDelete}"
+                    v-on:click="removeMe"></span>
+            <div class="list-card-details">
+                <span class="list-card-title">
+                    {{ card.text }}
+                </span>
+            </div>
+        </a>`,
+        data: function () {
+            return {
+                isActiveCard: false,
+                hoverDelete: false
             }
-        ];
-
-
-        const map = new google.maps.Map($('#map')[0], {
-            zoom: 10,
-            center: new google.maps.LatLng(0, 0),
-            disableDefaultUI: true
-        });
-        // add markers and center map
-        let bounds = new google.maps.LatLngBounds();
-        for (let i = 0; i < data.length; i++) {
-            const d = data[i];
-            const latLng = new google.maps.LatLng(d['lat'], d['lng']);
-
-            // prepare popup on mouseover
-            overlays.push(new InfoWindow(latLng, d, map));
-
-            markers.push(new google.maps.Marker({
-                position: latLng,
-                map: map,
-                title: d['name'],
-                id: i
-            }));
-
-            markers[i].addListener('mouseover', function (e) {
-                overlays[this.id].show();
-            });
-
-            markers[i].addListener('mouseout', function () {
-                overlays[this.id].hide();
-            });
-
-            markers[i].addListener('click', function () {
-                // hide overlay
-                overlays[this.id].hide();
-                // enable the left pane toggler
-                $(".left-pane-toggle-button-container").show();
-                // update left info pane values
-                $("#left-pane-card-title").text(data[i]['name']);
-                $("#left-pane-card-text").text(data[i]['description']);
-                $("#left-pane-card-img").attr('src', data[i]['thumbnail']);
-                // show left info pane
-                const e = $("#left-info-pane");
-                if (e.hasClass('left-pane-collapsed')) {
-                    // already collapsed, show again
-                    e.removeClass('left-pane-collapsed');
-                }
-
-            });
-
-            bounds = bounds.extend(latLng);
-        }
-        map.fitBounds(bounds);
-        map.setCenter(bounds.getCenter());
-    }
-
-    function InfoWindow(anchor, d, map) {
-        this.anchor_ = anchor;
-        this.image_ = d['thumbnail'];
-        this.name_ = d['name'];
-        this.starRating_ = d['star_rating'];
-
-        this.div_ = null;
-
-        this.setMap(map);
-    }
-
-    InfoWindow.prototype.onAdd = function () {
-        const div = document.createElement('div');
-        div.setAttribute('class', 'hover-card');
-
-        // Create the img element and attach it to the div.
-        const img = document.createElement('img');
-        img.setAttribute('class', 'hover-card-thumbnail');
-        img.src = this.image_;
-        div.appendChild(img);
-
-        // content div
-        const contentWrapperDiv = document.createElement('div');
-        contentWrapperDiv.setAttribute('class', 'hover-card-content-wrapper');
-
-        const contentDiv = document.createElement('div');
-        contentDiv.setAttribute('class', 'hover-card-content');
-        contentDiv.innerText = this.name_;
-        contentWrapperDiv.appendChild(contentDiv);
-
-        // todo: half stars, with rating number
-        const starRatingDiv = document.createElement('div');
-        starRatingDiv.setAttribute('class', 'hover-card-star');
-        starRatingDiv.innerText = this.starRating_ + '   ' + '★'.repeat(Math.round(this.starRating_));
-        contentWrapperDiv.appendChild(starRatingDiv);
-
-        div.appendChild(contentWrapperDiv);
-
-        this.div_ = div;
-
-        // Add the element to the "overlayLayer" pane.
-        const panes = this.getPanes();
-        panes.overlayLayer.appendChild(div);
-    };
-
-    InfoWindow.prototype.draw = function () {
-        const overlayProjection = this.getProjection();
-        const anchor = overlayProjection.fromLatLngToDivPixel(this.anchor_);
-
-        const div = this.div_;
-        // todo: auto calculate offset according to screen boundary and left pane
-        div.style.left = anchor.x + 'px';
-        div.style.top = anchor.y + 'px';
-        div.style.visibility = 'hidden';
-    };
-
-    InfoWindow.prototype.hide = function () {
-        if (this.div_) {
-            this.div_.style.visibility = 'hidden';
-        }
-    };
-
-    InfoWindow.prototype.show = function () {
-        if (this.div_) {
-            this.div_.style.visibility = 'visible';
-        }
-    };
-
-    google.maps.event.addDomListener(window, 'load', initMap);
-
-    // left pane toggle
-    $(".left-pane-toggle-button").click(function () {
-        const e = $("#left-info-pane");
-        if (e.hasClass('left-pane-collapsed')) {
-            // already collapsed, show again
-            e.removeClass('left-pane-collapsed');
-        } else {
-            // collapse
-            e.addClass('left-pane-collapsed');
+        },
+        methods: {
+            removeMe: function () {
+                this.$emit('removecard', this.card.destination_id);
+            }
         }
     });
+
+    var app1 = new Vue({
+        el: '#vue-dragged-cards',
+        data: {
+            draggedCards: [] // {text, destination_id}
+        },
+        methods: {
+            removeCard: function (did) {
+                this.draggedCards = this.draggedCards.filter(e => e.destination_id != did);
+            }
+        }
+    });
+
+    function containsDestinationId(arr, did) {
+        // js has no good list.exists function, hence this function
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].destination_id === did) {
+                return true;
+            }
+        }
+        return false
+    }
+
+    $(".ui-droppable").droppable({
+        accept: ".marker-draggable",
+        hoverClass: "dropaccept",
+        drop: function (event, ui) {
+            const did = ui.draggable.attr("destination-id");
+            const d = data[did];
+
+            if (!(containsDestinationId(app1.draggedCards, did))) {
+                app1.draggedCards.push({text: d['name'], destination_id: did});
+            } else {
+                // todo flash-highlight the current already-dragged card
+            }
+        }
+    });
+
+    google.maps.event.addDomListener(window, 'load', initMap(data));
 
 </script>
 </body>
