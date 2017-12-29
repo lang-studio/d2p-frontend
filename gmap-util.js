@@ -17,9 +17,8 @@ function initMap(data) {
     const overlays = [];
     const markers = [];
 
-    // server side return
-
     const map = new google.maps.Map($('#map')[0], {
+        // below are init properties that will be updated by bounds later
         zoom: 10,
         center: new google.maps.LatLng(0, 0)
     });

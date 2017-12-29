@@ -213,7 +213,7 @@
 
 <script>
 
-
+    // mock data for now, to be replaced by server call
     const data = [
         {
             name: "Glasgow",
@@ -253,12 +253,12 @@
         </a>`,
         data: function () {
             return {
-                isActiveCard:false,
-                hoverDelete:false
+                isActiveCard: false,
+                hoverDelete: false
             }
         },
         methods: {
-            removeMe:function () {
+            removeMe: function () {
                 this.$emit('removecard', this.card.destination_id);
             }
         }
@@ -269,16 +269,17 @@
         data: {
             draggedCards: [] // {text, destination_id}
         },
-        methods:{
-            removeCard:function (did) {
+        methods: {
+            removeCard: function (did) {
                 this.draggedCards = this.draggedCards.filter(e => e.destination_id != did);
             }
         }
     });
 
-    function containsId(arr, did){
-        for (let i = 0; i < arr.length; i++){
-            if (arr[i].destination_id === did){
+    function containsDestinationId(arr, did) {
+        // js has no good list.exists function, hence this function
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].destination_id === did) {
                 return true;
             }
         }
@@ -292,10 +293,10 @@
             const did = ui.draggable.attr("destination-id");
             const d = data[did];
 
-            if (!(containsId(app1.draggedCards, did))){
-                app1.draggedCards.push({text: d['name'], destination_id:did});
-            } else{
-                // todo flash-highlight the original card
+            if (!(containsDestinationId(app1.draggedCards, did))) {
+                app1.draggedCards.push({text: d['name'], destination_id: did});
+            } else {
+                // todo flash-highlight the current already-dragged card
             }
         }
     });
