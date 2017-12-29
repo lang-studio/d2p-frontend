@@ -113,12 +113,16 @@
         .list-card-operation.delete-icon {
             background-image: url("dev-resources/images/delete-icon.png");
             background-size: cover;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
+        }
+
+        .list-card-operation.active-card {
+            visibility: visible;
         }
 
         .list-card-operation.dark-hover {
-            visibility: visible;
+            background-color: #4d4d4d;
         }
 
     </style>
@@ -237,7 +241,9 @@
                         @mouseleave="isActiveCard=false"
                         v-bind:class="{'active-card':isActiveCard}">
             <span class="list-card-operation delete-icon"
-                    v-bind:class="{'dark-hover':isActiveCard}"
+                    @mouseover="hoverDelete=true"
+                    @mouseleave="hoverDelete=false"
+                    v-bind:class="{'active-card':isActiveCard, 'dark-hover':hoverDelete}"
                     v-on:click="removeMe"></span>
             <div class="list-card-details">
                 <span class="list-card-title">
@@ -247,7 +253,8 @@
         </a>`,
         data: function () {
             return {
-                isActiveCard:false
+                isActiveCard:false,
+                hoverDelete:false
             }
         },
         methods: {

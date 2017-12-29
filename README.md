@@ -1,10 +1,15 @@
 ### How to run
 - start `python3 -m http.server` at dev-resources/ directory. This starts a local cdn for images.
 
+### Naming conventions
+main functionalities:
+- map related
+- 
+
 ### TODO
-- separate into different css/js files
+- ~~separate into different css/js files~~
 - autocomplete search input
-- drag and drop to list view
+- ~~drag and drop to list view~~
 - enable links on google map other locations
 - custom destinations
 
