@@ -34,7 +34,7 @@
     position: absolute;
     width: 312px;
     top: 0;
-    left: 0;
+    left: 15px; /* offset for row */
     z-index: 1;
     transform: translateX(0px);
     transition-property: -webkit-transform, transform, opacity;

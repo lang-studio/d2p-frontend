@@ -177,6 +177,21 @@
     <div class="row">
         <div class="col-9">
             <div id="map"></div>
+            <div class="left-pane left-pane-visible left-pane-collapsed" id="left-info-pane">
+
+                <div class="left-pane-content-holder">
+                    <div class="card">
+                        <img class="card-img-top" id="left-pane-card-img" src="">
+                        <div class="card-body">
+                            <h4 class="card-title" id="left-pane-card-title"></h4>
+                            <p class="card-text" id="left-pane-card-text"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="left-pane-toggle-button-container">
+                    <button type="button" class="left-pane-toggle-button"></button>
+                </div>
+            </div>
         </div>
 
         <div class="col-3">
@@ -218,21 +233,7 @@
 </div>
 
 <!-- left pane todo: we should put in one div as container i think -->
-<div class="left-pane left-pane-visible left-pane-collapsed" id="left-info-pane">
 
-    <div class="left-pane-content-holder">
-        <div class="card">
-            <img class="card-img-top" id="left-pane-card-img" src="">
-            <div class="card-body">
-                <h4 class="card-title" id="left-pane-card-title"></h4>
-                <p class="card-text" id="left-pane-card-text"></p>
-            </div>
-        </div>
-    </div>
-    <div class="left-pane-toggle-button-container">
-        <button type="button" class="left-pane-toggle-button"></button>
-    </div>
-</div>
 
 
 <script
@@ -314,6 +315,7 @@
         this.classList.remove('warning-flash')
     });
 
+    // press enter triggers submit
     $("#search-input").keyup(function(event) {
         if (event.keyCode === 13) {
             $("#search-submit").click();
