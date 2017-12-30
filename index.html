@@ -131,11 +131,11 @@
             width: 50%;
         }
 
-        #search-input{
+        #search-input {
             border-color: blue;
         }
 
-        #search-input.warning-flash{
+        #search-input.warning-flash {
             animation-duration: 0.5s;
             animation-name: warningflash;
         }
@@ -151,45 +151,90 @@
             }
         }
 
-        .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
-        .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
-        .autocomplete-selected { background: #F0F0F0; }
-        .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
-        .autocomplete-group { padding: 2px 5px; }
-        .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+        .autocomplete-suggestions {
+            border: 1px solid #999;
+            background: #FFF;
+            overflow: auto;
+        }
+
+        .autocomplete-suggestion {
+            padding: 2px 5px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .autocomplete-selected {
+            background: #F0F0F0;
+        }
+
+        .autocomplete-suggestions strong {
+            font-weight: normal;
+            color: #3399FF;
+        }
+
+        .autocomplete-group {
+            padding: 2px 5px;
+        }
+
+        .autocomplete-group strong {
+            display: block;
+            border-bottom: 1px solid #000;
+        }
 
     </style>
 
 </head>
+
+<template id="template-list-card">
+    <a class="list-card"
+       @mouseover="isActiveCard=true"
+       @mouseleave="isActiveCard=false"
+       v-bind:class="{'active-card':isActiveCard}">
+            <span class="list-card-operation delete-icon"
+                  @mouseover="hoverDelete=true"
+                  @mouseleave="hoverDelete=false"
+                  v-bind:class="{'active-card':isActiveCard, 'dark-hover':hoverDelete}"
+                  v-on:click="removeMe"></span>
+        <div class="list-card-details">
+                <span class="list-card-title">
+                    {{ card.text }}
+                </span>
+        </div>
+    </a>
+</template>
+
 <body>
 
 <div class="container-fluid h-100">
 
     <div class="row search-scope">
         <div class="input-group" id="search-container">
-            <input type="text" id="search-input" class="form-control" placeholder="Next destination.." aria-label="Next destination">
+            <input type="text" id="search-input" class="form-control" placeholder="Next destination.."
+                   aria-label="Next destination">
             <div class="input-group-append">
                 <button id="search-submit" class="btn btn-outline-info" type="button">Go</button>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" id="vue-instance">
         <div class="col-9">
             <div id="map"></div>
-            <div class="left-pane left-pane-visible left-pane-collapsed" id="left-info-pane">
+            <div class="left-pane left-pane-visible" id="left-info-pane"
+                 v-bind:class="{'left-pane-collapsed':!leftPane.isActive}">
 
                 <div class="left-pane-content-holder">
                     <div class="card">
-                        <img class="card-img-top" id="left-pane-card-img" src="">
+                        <img class="card-img-top" id="left-pane-card-img" v-bind:src="leftPane.thumbnail">
                         <div class="card-body">
-                            <h4 class="card-title" id="left-pane-card-title"></h4>
-                            <p class="card-text" id="left-pane-card-text"></p>
+                            <h4 class="card-title" id="left-pane-card-title">{{ leftPane.name }}</h4>
+                            <p class="card-text" id="left-pane-card-text">{{ leftPane.description }}</p>
                         </div>
                     </div>
                 </div>
-                <div class="left-pane-toggle-button-container">
-                    <button type="button" class="left-pane-toggle-button"></button>
+                <div class="left-pane-toggle-button-container" v-show="leftPane.showBtn">
+                    <button type="button" class="left-pane-toggle-button"
+                            v-on:click="leftPane.isActive = !leftPane.isActive"></button>
                 </div>
             </div>
         </div>
@@ -201,7 +246,6 @@
                     <div class="list-cards">
 
                         <div id="vue-dragged-cards">
-
                             <!-- populated by code -->
                             <dragged-card
                                     v-for="card in draggedCards"
@@ -235,7 +279,6 @@
 <!-- left pane todo: we should put in one div as container i think -->
 
 
-
 <script
         src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -261,15 +304,9 @@
 
     // autocomplete search
     const mockAutocompleteResult = [
-        { value: 'Scotland', data: 1 } // data is destination_id
+        {value: 'Scotland', data: 1} // data is destination_id
     ];
 
-    // init empty map
-    const map = new google.maps.Map($('#map')[0], {
-        // below are init properties that will be updated by bounds later
-        zoom: 10,
-        center: new google.maps.LatLng(0, 0)
-    });
 
     let isValidSearch = false;
     let lastSuggestion = null;
@@ -281,11 +318,11 @@
         // todo: turn it into backend call
         lookup: mockAutocompleteResult,
         triggerSelectOnValidInput: false,
-        onSelect:function (suggestion) {
+        onSelect: function (suggestion) {
             isValidSearch = true;
             lastSuggestion = suggestion;
         },
-        onInvalidateSelection:function () {
+        onInvalidateSelection: function () {
             isValidSearch = false;
             // flash input border to red?
             // searchInput.classList.add('warning-flash');
@@ -294,7 +331,7 @@
 
 
     searchSubmitBtn.addEventListener('click', function () {
-        if (isValidSearch){
+        if (isValidSearch) {
             console.log(lastSuggestion);
             const destination_id = lastSuggestion.data;
             // todo: call backend to populate data, call updateMap
@@ -302,7 +339,7 @@
             $.get("http://localhost:3000/destinations", function (d) {
                 console.log(d);
                 data = d;
-                updateMap(map, data);
+                updateMap(app1.map, data);
             }, "json");
 
         } else {
@@ -314,7 +351,7 @@
     });
 
     // press enter triggers submit
-    $("#search-input").keyup(function(event) {
+    $("#search-input").keyup(function (event) {
         if (event.keyCode === 13) {
             $("#search-submit").click();
         }
@@ -323,21 +360,7 @@
     // component must be registered before instantiating vue instance
     Vue.component('dragged-card', {
         props: ['card'],
-        template: `<a class="list-card"
-                        @mouseover="isActiveCard=true"
-                        @mouseleave="isActiveCard=false"
-                        v-bind:class="{'active-card':isActiveCard}">
-            <span class="list-card-operation delete-icon"
-                    @mouseover="hoverDelete=true"
-                    @mouseleave="hoverDelete=false"
-                    v-bind:class="{'active-card':isActiveCard, 'dark-hover':hoverDelete}"
-                    v-on:click="removeMe"></span>
-            <div class="list-card-details">
-                <span class="list-card-title">
-                    {{ card.text }}
-                </span>
-            </div>
-        </a>`,
+        template: '#template-list-card',
         data: function () {
             return {
                 isActiveCard: false,
@@ -352,9 +375,25 @@
     });
 
     var app1 = new Vue({
-        el: '#vue-dragged-cards',
+        el: '#vue-instance',
+        mounted: function () {
+            // init empty map
+            this.map = new google.maps.Map($('#map')[0], {
+                // below are init properties that will be updated by bounds later
+                zoom: 10,
+                center: new google.maps.LatLng(0, 0)
+            });
+        },
         data: {
-            draggedCards: [] // {text, destination_id}
+            draggedCards: [], // {text, destination_id}
+            leftPane: {
+                showBtn: false,
+                isActive: false,
+                name: '',
+                description: '',
+                thumbnail: ''
+            }
+
         },
         methods: {
             removeCard: function (did) {
@@ -387,7 +426,6 @@
             }
         }
     });
-
 
 
     //google.maps.event.addDomListener(window, 'load', updateMap(map, data));

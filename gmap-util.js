@@ -59,17 +59,13 @@ function updateMap(map, data) {
             // hide overlay
             overlays[this.id].hide();
             // enable the left pane toggler
-            $(".left-pane-toggle-button-container").show();
+            app1.leftPane.isActive = true;
+            app1.leftPane.showBtn = true;
             // update left info pane values
-            $("#left-pane-card-title").text(data[i]['name']);
-            $("#left-pane-card-text").text(data[i]['description']);
-            $("#left-pane-card-img").attr('src', data[i]['thumbnail']);
-            // show left info pane
-            const e = $("#left-info-pane");
-            if (e.hasClass('left-pane-collapsed')) {
-                // already collapsed, show again
-                e.removeClass('left-pane-collapsed');
-            }
+            app1.leftPane.name = data[i]['name'];
+            app1.leftPane.description = data[i]['description'];
+            app1.leftPane.thumbnail = data[i]['thumbnail'];
+
 
         });
 
@@ -154,19 +150,3 @@ function setMarkerDraggable(markers) {
         });
     });
 }
-
-// hide toggle button (we don't have data to render on load)
-$('.left-pane-toggle-button-container').hide();
-
-// left pane toggle button
-$(".left-pane-toggle-button").click(function () {
-    const e = $("#left-info-pane");
-    if (e.hasClass('left-pane-collapsed')) {
-        // already collapsed, show again
-        e.removeClass('left-pane-collapsed');
-    } else {
-        // collapse
-        e.addClass('left-pane-collapsed');
-    }
-});
-
