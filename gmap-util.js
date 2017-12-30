@@ -12,16 +12,11 @@ function InfoWindow(anchor, d, map) {
     this.setMap(map);
 }
 
-function initMap(data) {
+function updateMap(map, data) {
 
     const overlays = [];
     const markers = [];
 
-    const map = new google.maps.Map($('#map')[0], {
-        // below are init properties that will be updated by bounds later
-        zoom: 10,
-        center: new google.maps.LatLng(0, 0)
-    });
     // add markers and center map
     let bounds = new google.maps.LatLngBounds();
     for (let i = 0; i < data.length; i++) {

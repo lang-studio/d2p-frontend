@@ -1,5 +1,6 @@
 ### How to run
 - start `python3 -m http.server` at dev-resources/ directory. This starts a local cdn for images.
+- start `json-server --watch dev-resources/db.json`. This starts a mock json server.
 
 ### Naming conventions
 main functionalities:

@@ -1,0 +1,22 @@
+{
+  "destinations": [
+    {
+      "name": "Glasgow",
+      "lat": 55.8642,
+      "lng": -4.2518,
+      "thumbnail": "http://localhost:8000/images/glasgow-thumbnail.jpeg",
+      "star_rating": 4.9,
+      "description": "A city in Scotland",
+      "id": 1
+    },
+    {
+      "name": "Edinburgh",
+      "lat": 55.9533,
+      "lng": -3.1883,
+      "thumbnail": "http://localhost:8000/images/scotland-thumbnail.jpg",
+      "star_rating": 4,
+      "description": "Another city in Scotland",
+      "id": 2
+    }
+  ]
+}

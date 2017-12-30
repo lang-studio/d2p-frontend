@@ -257,29 +257,19 @@
 <script>
 
     // mock data for now, to be replaced by server call
-    const data = [
-        {
-            name: "Glasgow",
-            lat: 55.8642,
-            lng: -4.2518,
-            thumbnail: "http://localhost:8000/images/glasgow-thumbnail.jpeg",
-            star_rating: 4.9,
-            description: "A city in Scotland"
-        },
-        {
-            name: "Edinburgh",
-            lat: 55.9533,
-            lng: -3.1883,
-            thumbnail: "http://localhost:8000/images/scotland-thumbnail.jpg",
-            star_rating: 4,
-            description: "Another city in Scotland"
-        }
-    ];
+    var data = [];
 
     // autocomplete search
     const mockAutocompleteResult = [
         { value: 'Scotland', data: 1 } // data is destination_id
     ];
+
+    // init empty map
+    const map = new google.maps.Map($('#map')[0], {
+        // below are init properties that will be updated by bounds later
+        zoom: 10,
+        center: new google.maps.LatLng(0, 0)
+    });
 
     let isValidSearch = false;
     let lastSuggestion = null;
@@ -307,6 +297,14 @@
         if (isValidSearch){
             console.log(lastSuggestion);
             const destination_id = lastSuggestion.data;
+            // todo: call backend to populate data, call updateMap
+            // http://localhost:3000/destinations
+            $.get("http://localhost:3000/destinations", function (d) {
+                console.log(d);
+                data = d;
+                updateMap(map, data);
+            }, "json");
+
         } else {
             searchInput.classList.add('warning-flash');
         }
@@ -390,7 +388,11 @@
         }
     });
 
-    google.maps.event.addDomListener(window, 'load', initMap(data));
+
+
+    //google.maps.event.addDomListener(window, 'load', updateMap(map, data));
+
+    //updateMap(map, data);
 
 </script>
 </body>
