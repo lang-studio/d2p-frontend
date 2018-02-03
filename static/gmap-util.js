@@ -12,7 +12,7 @@ function InfoWindow(anchor, d, map) {
     this.setMap(map);
 }
 
-function updateMap(map, data) {
+function updateMap(map, data, app1) {
 
     const overlays = [];
     const markers = [];

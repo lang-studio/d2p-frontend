@@ -1,456 +1,64 @@
-<!doctype html>
-<html class="no-js" lang="en">
-<head>
+<!DOCTYPE html>
+<html>
+  <head>
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    <link rel="stylesheet" href="gmap-util.css">
-    <style>
+    <link rel="stylesheet" href="/static/gmap-util.css">
+  </head>
+  <body>
 
-        html, body {
-            height: 100%;
-        }
-
-        .row { /* debug only */
-            border: 1px dotted black;
-        }
-
-        html {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .container-fluid {
-            padding-left: 0;
-            padding-right: 0;
-            position: relative;
-        }
-
-        /* dropzone debug styles */
-        .list-wrapper {
-            width: 270px;
-            margin: 0 5px;
-            box-sizing: border-box;
-            display: inline-block;
-            vertical-align: top;
-            white-space: nowrap;
-            background: #e2e4e6;
-            border-radius: 3px;
-        }
-
-        .list-content {
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            max-height: 100%;
-            position: relative;
-            white-space: normal;
-        }
-
-        .list-header {
-            min-height: 18px;
-            padding: 8px 10px;
-        }
-
-        .list-cards {
-            z-index: 1;
-            margin: 0 4px;
-            padding: 0 4px;
-        }
-
-        .list-card {
-            background-color: #fff;
-            border-bottom: 1px solid #ccc;
-            border-radius: 3px;
-            cursor: pointer;
-            display: block;
-            margin-bottom: 6px;
-            max-width: 300px;
-            min-height: 20px;
-            text-decoration: none;
-            position: relative;
-        }
-
-        .list-card.active-card {
-            background-color: #edeff0;
-            border-bottom-color: #d6dadc;
-        }
-
-        .list-card.ui-droppable {
-            background-color: #cccccc;
-        }
-
-        .list-card.ui-droppable.dropaccept {
-            background-color: orange;
-        }
-
-        .list-card-title {
-            clear: both;
-            display: block;
-            margin: 0 0 4px;
-            padding: 6px 6px 2px 8px;
-            overflow: hidden;
-            text-decoration: none;
-            word-wrap: break-word;
-            color: #4d4d4d;
-        }
-
-        .list-card-operation {
-            background-color: #edeff0;
-            background-clip: padding-box;
-            background-origin: padding-box;
-            border-radius: 3px;
-            opacity: .8;
-            padding: 4px;
-            position: absolute;
-            right: 8px;
-            top: 8px;
-            visibility: hidden;
-        }
-
-        .list-card-operation.delete-icon {
-            background-image: url("dev-resources/images/delete-icon.png");
-            background-size: cover;
-            width: 22px;
-            height: 22px;
-        }
-
-        .list-card-operation.active-card {
-            visibility: visible;
-        }
-
-        .list-card-operation.dark-hover {
-            background-color: #4d4d4d;
-        }
-
-        /* autocomplete */
-        .search-scope {
-            margin: 10px;
-            width: 50%;
-        }
-
-        #search-input {
-            border-color: blue;
-        }
-
-        #search-input.warning-flash {
-            animation-duration: 0.5s;
-            animation-name: warningflash;
-        }
-
-        @keyframes warningflash {
-            from {
-                border-color: red;
-                background-color: lightpink;
-            }
-            to {
-                border-color: blue;
-                background-color: white;
-            }
-        }
-
-        .autocomplete-suggestions {
-            border: 1px solid #999;
-            background: #FFF;
-            overflow: auto;
-        }
-
-        .autocomplete-suggestion {
-            padding: 2px 5px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .autocomplete-selected {
-            background: #F0F0F0;
-        }
-
-        .autocomplete-suggestions strong {
-            font-weight: normal;
-            color: #3399FF;
-        }
-
-        .autocomplete-group {
-            padding: 2px 5px;
-        }
-
-        .autocomplete-group strong {
-            display: block;
-            border-bottom: 1px solid #000;
-        }
-
-    </style>
-
-</head>
-
-<template id="template-list-card">
-    <a class="list-card"
-       @mouseover="isActiveCard=true"
-       @mouseleave="isActiveCard=false"
-       v-bind:class="{'active-card':isActiveCard}">
-            <span class="list-card-operation delete-icon"
-                  @mouseover="hoverDelete=true"
-                  @mouseleave="hoverDelete=false"
-                  v-bind:class="{'active-card':isActiveCard, 'dark-hover':hoverDelete}"
-                  v-on:click="removeMe"></span>
-        <div class="list-card-details">
-                <span class="list-card-title">
-                    {{ card.text }}
-                </span>
-        </div>
-    </a>
-</template>
-
-
-<template id="template-destination-tray">
-    <div class="list-content">
-        <div class="list-header">{{ tray.text }}</div>
-        <div class="list-cards">
-
-            <!-- populated by code -->
-            <dragged-card
-                    v-for="card in tray.draggedCards"
-                    v-bind:card="card"
-                    v-on:removecard="removeCard">
-            </dragged-card>
-
-
-            <a class="list-card ui-droppable">
-                <div class="list-card-details">
-                    <span class="list-card-title">
-                        Drop marker here
-                    </span>
-                </div>
-            </a>
-
-        </div>
-    </div>
-</template>
-
-
-<body>
-
-<div class="container-fluid h-100">
+  <div class="container-fluid h-100">
 
     <div class="row search-scope">
-        <div class="input-group" id="search-container">
-            <input type="text" id="search-input" class="form-control" placeholder="Next destination.."
-                   aria-label="Next destination">
-            <div class="input-group-append">
-                <button id="search-submit" class="btn btn-outline-info" type="button">Go</button>
-            </div>
+      <div class="input-group" id="search-container">
+        <input type="text" id="search-input" class="form-control" placeholder="Next destination.."
+               aria-label="Next destination">
+        <div class="input-group-append">
+          <button id="search-submit" class="btn btn-outline-info" type="button">Go</button>
         </div>
+      </div>
     </div>
 
-    <div class="row" id="vue-instance">
-        <div class="col-9">
-            <div id="map"></div>
-            <div class="left-pane left-pane-visible" id="left-info-pane"
-                 v-bind:class="{'left-pane-collapsed':!leftPane.isActive}">
-
-                <div class="left-pane-content-holder">
-                    <div class="card">
-                        <img class="card-img-top" id="left-pane-card-img" v-bind:src="leftPane.thumbnail">
-                        <div class="card-body">
-                            <h4 class="card-title" id="left-pane-card-title">{{ leftPane.name }}</h4>
-                            <p class="card-text" id="left-pane-card-text">{{ leftPane.description }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="left-pane-toggle-button-container" v-show="leftPane.showBtn">
-                    <button type="button" class="left-pane-toggle-button"
-                            v-on:click="leftPane.isActive = !leftPane.isActive"></button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-3">
-            <div class="list-wrapper">
-
-                <destination-tray
-                        v-for="tray in destinationTrays"
-                        v-bind:tray="tray"
-                        v-on:droppedcard="dragCard"
-                        v-on:removecard="removeCard">
-                </destination-tray>
-
-            </div>
+    <div class="row" id="app"></div>
+    <!-- built files will be auto injected -->
 
 
-            <div class="dropzone"></div>
-        </div>
-    </div>
-
-</div>
-
-<!-- left pane todo: we should put in one div as container i think -->
+  </div>
 
 
-<script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
-        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
-        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
-        crossorigin="anonymous"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8aYptivVN3ikaxl5H0dK_clsnSO4MLGE"></script>
-<script src="resources/js/richmarker-compiled.js"></script>
-<script src="resources/js/jquery-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-<script src="resources/js/jquery.autocomplete.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.16.0/vuedraggable.min.js"></script>
-<!-- my scripts below -->
-<script src="gmap-util.js"></script>
-<script src="helper.js"></script>
-
-<script>
-
-    // mock data for now, to be replaced by server call
-    var data = [];
-
-    // autocomplete search
-    const mockAutocompleteResult = [
-        {value: 'Scotland', data: 1}, // data is destination_id
-        {value: 'Edinburgh', data: 2}
-    ];
 
 
-    let isValidSearch = false;
-    let lastSuggestion = null;
+  <script
+    src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+          integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+          crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+          integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+          crossorigin="anonymous"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8aYptivVN3ikaxl5H0dK_clsnSO4MLGE"></script>
+  <script src="/static/richmarker-compiled.js"></script>
+  <script src="/static/jquery-ui.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="/static/jquery.autocomplete.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.16.0/vuedraggable.min.js"></script>
+  <!-- my scripts below -->
+  <script src="/static/gmap-util.js"></script>
+  <script src="/static/helper.js"></script>
 
-    const searchSubmitBtn = document.getElementById('search-submit');
-    const searchInput = document.getElementById('search-input');
 
-    $('#search-input').devbridgeAutocomplete({
-        // todo: turn it into backend call
-        lookup: mockAutocompleteResult,
-        triggerSelectOnValidInput: false,
-        onSelect: function (suggestion) {
-            isValidSearch = true;
-            lastSuggestion = suggestion;
-        },
-        onInvalidateSelection: function () {
-            isValidSearch = false;
-            // flash input border to red?
-            // searchInput.classList.add('warning-flash');
-        }
-    });
+  <script>
 
-    searchSubmitBtn.addEventListener('click', function () {
-        if (isValidSearch) {
-            console.log(lastSuggestion);
-            const destination_id = lastSuggestion.data;
-            // push a new destinationTray
-            app1.destinationTrays.push({text:lastSuggestion.value, id:lastSuggestion.data, draggedCards:[]});
-            // todo: call backend to populate data, call updateMap
-            // http://localhost:3000/destinations
-            $.get("http://localhost:3000/destinations", function (d) {
-                console.log(d);
-                data = d;
-                updateMap(app1.map, data);
-            }, "json");
 
-        } else {
-            searchInput.classList.add('warning-flash');
-        }
-    });
-    searchInput.addEventListener('animationend', function () {
-        this.classList.remove('warning-flash')
-    });
+  </script>
 
-    // press enter triggers submit
-    $("#search-input").keyup(function (event) {
-        if (event.keyCode === 13) {
-            $("#search-submit").click();
-        }
-    });
 
-    // component must be registered before instantiating vue instance
-    Vue.component('dragged-card', {
-        props: ['card'],
-        template: '#template-list-card',
-        data: function () {
-            return {
-                isActiveCard: false,
-                hoverDelete: false
-            }
-        },
-        methods: {
-            removeMe: function () {
-                this.$emit('removecard', this.card.destination_id);
-            }
-        }
-    });
-
-    Vue.component('destination-tray', {
-        template: '#template-destination-tray',
-        props: ['tray'],
-        mounted: function(){ // todo: use vue-draggable
-            // this hack because "this" will be overwritten in jquery below
-            const tray_id = this.tray.id;
-            const e = this;
-            $(".ui-droppable").droppable({
-                accept: ".marker-draggable",
-                hoverClass: "dropaccept",
-                drop: function (event, ui) {
-                    const did = ui.draggable.attr("destination-id");
-                    const d = data[did];
-                    e.$emit('droppedcard', did, d, tray_id);
-                }
-            });
-        },
-        methods: {
-            removeCard: function (did) {
-                this.$emit('removecard', did, this.tray.id);
-            }
-        }
-    });
-
-    var app1 = new Vue({
-        el: '#vue-instance',
-        mounted: function () {
-            // init empty map
-            this.map = new google.maps.Map($('#map')[0], {
-                // below are init properties that will be updated by bounds later
-                zoom: 10,
-                center: new google.maps.LatLng(0, 0)
-            });
-        },
-        data: {
-            destinationTrays: [],// {id, text, draggedCards}
-            draggedCards: [], // {text, destination_id}
-            leftPane: {
-                showBtn: false,
-                isActive: false,
-                name: '',
-                description: '',
-                thumbnail: ''
-            }
-
-        },
-        methods: {
-            dragCard: function(did, d, tray_id){
-               const tray = this.destinationTrays.filter(e => e.id === tray_id)[0];
-               if (!(containsDestinationId(tray.draggedCards, did))){
-                   tray.draggedCards.push({text: d['name'], destination_id: did});
-               } else {
-                   // todo flash-highlight the current already-dragged card
-               }
-
-            },
-            removeCard:function(did, tray_id){
-                const tray = this.destinationTrays.filter(e => e.id === tray_id)[0];
-                tray.draggedCards = tray.draggedCards.filter(e => e.destination_id !== did);
-            }
-        }
-    });
-
-</script>
-</body>
+  </body>
 </html>

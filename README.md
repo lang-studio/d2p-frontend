@@ -1,3 +1,25 @@
+# dots2trip-frontend
+
+> A Vue.js project
+
+## Build Setup
+
+``` bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
+npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
+```
+
+For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
 ### How to run
 - start `python3 -m http.server` at dev-resources/ directory. This starts a local cdn for images.
 - start `json-server --watch dev-resources/db.json`. This starts a mock json server.
@@ -34,4 +56,3 @@ main functionalities:
     - [Can user only select value from the suggestions list](https://github.com/devbridge/jQuery-Autocomplete/issues/446)
 - design
     - [material design](https://material.io/)
-        

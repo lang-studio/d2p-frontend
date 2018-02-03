@@ -1,6 +1,6 @@
 var assert = require('assert');
 
-var o = require('../search_session.js');
+var o = require('../src/search_session.js');
 
 describe('card', function(){
     describe('from_lineage', function(){

@@ -79,7 +79,8 @@
 .gmarker {
     width: 32px;
     height: 32px;
-    background-image: url("dev-resources/images/map-marker.png");
+  /*background-color: aqua;*/
+    background-image: url("/static/map-marker.png");
     background-size: cover;
     cursor: pointer;
 }
