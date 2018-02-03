@@ -303,8 +303,11 @@
 <script src="resources/js/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="resources/js/jquery.autocomplete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.16.0/vuedraggable.min.js"></script>
 <!-- my scripts below -->
 <script src="gmap-util.js"></script>
+<script src="helper.js"></script>
 
 <script>
 
@@ -447,16 +450,6 @@
             }
         }
     });
-
-    function containsDestinationId(arr, did) {
-        // js has no good list.exists function, hence this function
-        for (let i = 0; i < arr.length; i++) {
-            if (arr[i].destination_id === did) {
-                return true;
-            }
-        }
-        return false
-    }
 
 </script>
 </body>
