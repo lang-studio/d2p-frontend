@@ -2,6 +2,14 @@
 - start `python3 -m http.server` at dev-resources/ directory. This starts a local cdn for images.
 - start `json-server --watch dev-resources/db.json`. This starts a mock json server.
 
+### How to run unit tests
+
+`npm test`
+
+### javascript style guide
+- class name: camelCase
+- methods/variable name: underscore
+
 ### Naming conventions
 main functionalities:
 - map related
@@ -17,6 +25,9 @@ main functionalities:
 
 ### References
 - [drag marker off google map](http://jsfiddle.net/H4Rp2/38/)
+- vue related
+    - [vue draggable](https://github.com/SortableJS/Vue.Draggable)
+    - [single file components](https://vuejs.org/v2/guide/single-file-components.html)
 - [autocomplete related](https://github.com/devbridge/jQuery-Autocomplete)
     - [Retaining autocomplete results after no matches occurs](https://github.com/devbridge/jQuery-Autocomplete/issues/553)
     - [design for forcing users to choose from suggestions only](https://ux.stackexchange.com/questions/20413/how-to-force-a-user-to-choose-from-suggestions-by-typing)
