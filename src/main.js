@@ -11,6 +11,8 @@ Vue.config.productionTip = false;
 const s = new o.SearchSession(0,0);
 console.log(s);*/
 
+const o = require('./search_session.js');
+
 /* eslint-disable no-new */
 const app = new Vue({
   el: '#app',
@@ -54,14 +56,16 @@ searchSubmitBtn.addEventListener('click', function () {
   if (isValidSearch) {
     console.log(lastSuggestion);
     const destination_id = lastSuggestion.data;
-    // push a new destinationTray todo: replace
-    // app1.destinationTrays.push({text:lastSuggestion.value, id:lastSuggestion.data, draggedCards:[]});
+    // push a new search session
+    let s = new o.SearchSession(destination_id, lastSuggestion.value);
+    app1.search_sessions.push(s);
     // todo: call backend to populate data, call updateMap
     // http://localhost:3000/destinations
     $.get("http://localhost:3000/destinations", function (d) {
       console.log(d);
       app1.mapData = d;
       updateMap(app1.map, app1.mapData, app1)
+      // todo: call s.post_api
     }, "json")
 
   }else {

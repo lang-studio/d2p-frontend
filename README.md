@@ -52,6 +52,7 @@ main functionalities:
 
 
 ### References
+- [recursive vue components](https://vuejsdevelopers.com/2017/10/23/vue-js-tree-menu-recursive-components/)
 - [drag marker off google map](http://jsfiddle.net/H4Rp2/38/)
 - vue related
     - [vue draggable](https://github.com/SortableJS/Vue.Draggable)

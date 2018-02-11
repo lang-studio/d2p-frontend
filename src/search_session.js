@@ -1,6 +1,7 @@
 class Dot{
-    constructor(destination_id, lat, lng){
+    constructor(destination_id, display_name, lat, lng){
         this.destination_id = destination_id;
+        this.display_name = display_name;
         this.lat = lat;
         this.lng = lng
     }
@@ -92,6 +93,11 @@ class SearchSession{
         this.dots_to_render = []; // list of Dot instances
         this.cards_to_render = []; // list of Card instances
         this.dot_relationships = new DotRelationship()
+    }
+
+    post_api(dots){
+      // update dot_relationships, known_dots, dots_to_render (todo)
+
     }
 
     post_drag_card(card){

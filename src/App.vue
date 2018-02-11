@@ -21,47 +21,47 @@
       </div>
     </div>
 
-    <div class="col-3"> <!-- todo: replace this with rendering search session -->
+    <div class="col-3"> <!-- rendering search session -->
+
+      <div v-for="search_session in search_sessions">
+        <SearchSessionC v-bind:search_session="search_session"></SearchSessionC>
+      </div>
 
     </div>
   </div>
 </template>
 
 <script>
-  const o = require('./search_session.js');
+  import SearchSessionC from './components/SearchSessionC'
 
-  // mock up searchSession
-  const session1 = new o.SearchSession(1,"session1");
-
-
-export default {
-  name: 'App',
-  components: {},
-  mounted: function () {
-    // init empty map
-    this.map = new google.maps.Map($('#map')[0], {
-      // below are init properties that will be updated by bounds later
-      zoom: 10,
-      center: new google.maps.LatLng(0, 0)
-    });
-  },
-  data: function(){
-    return {
-      searchSessions:[session1],
-      mapData:[],
-      leftPane: {
-        showBtn: false,
-        isActive: false,
-        name: '',
-        description: '',
-        thumbnail: ''
+  export default {
+    name: 'App',
+    components: {SearchSessionC},
+    mounted: function () {
+      // init empty map
+      this.map = new google.maps.Map($('#map')[0], {
+        // below are init properties that will be updated by bounds later
+        zoom: 10,
+        center: new google.maps.LatLng(0, 0)
+      });
+    },
+    data: function(){
+      return {
+        search_sessions:[],
+        mapData:[],
+        leftPane: { // todo: move this to component
+          showBtn: false,
+          isActive: false,
+          name: '',
+          description: '',
+          thumbnail: ''
+        }
       }
-    }
-  },
-  methods: {
+    },
+    methods: {
 
+    }
   }
-}
 </script>
 
 <style>
