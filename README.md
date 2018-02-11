@@ -13,6 +13,8 @@ npm run dev
 
 # build for production with minification
 npm run build
+// then under dist/, run: 
+python3 -m http.server 8080
 
 # build for production and view the bundle analyzer report
 npm run build --report
@@ -41,6 +43,7 @@ main functionalities:
 - autocomplete search: search-*
 
 ### TODO
+- remove dependency on jquery-ui (too big)
 - ~~separate into different css/js files~~
 - ~~autocomplete search input~~
 - ~~drag and drop to list view~~

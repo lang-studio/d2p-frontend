@@ -4,18 +4,23 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
+
+// how to import class from other files
+/*const o = require('./search_session.js');
+const s = new o.SearchSession(0,0);
+console.log(s);*/
 
 /* eslint-disable no-new */
-var app = new Vue({
+const app = new Vue({
   el: '#app',
   router,
   components: { App },
   template: '<App/>'
 
-})
+});
 
-var app1 = app.$root.$children[0];
+const app1 = app.$root.$children[0];
 
 // autocomplete search
 const mockAutocompleteResult = [
@@ -36,12 +41,12 @@ $('#search-input').devbridgeAutocomplete({
   triggerSelectOnValidInput: false,
   onSelect: function (suggestion) {
     isValidSearch = true;
-    lastSuggestion = suggestion;
+    lastSuggestion = suggestion
   },
   onInvalidateSelection: function () {
-    isValidSearch = false;
+    isValidSearch = false
     // flash input border to red?
-    // searchInput.classList.add('warning-flash');
+    // searchInput.classList.add('warning-flash')
   }
 });
 
@@ -49,27 +54,28 @@ searchSubmitBtn.addEventListener('click', function () {
   if (isValidSearch) {
     console.log(lastSuggestion);
     const destination_id = lastSuggestion.data;
-    // push a new destinationTray
-    app1.destinationTrays.push({text:lastSuggestion.value, id:lastSuggestion.data, draggedCards:[]});
+    // push a new destinationTray todo: replace
+    // app1.destinationTrays.push({text:lastSuggestion.value, id:lastSuggestion.data, draggedCards:[]});
     // todo: call backend to populate data, call updateMap
     // http://localhost:3000/destinations
     $.get("http://localhost:3000/destinations", function (d) {
       console.log(d);
       app1.mapData = d;
-      updateMap(app1.map, app1.mapData, app1);
-    }, "json");
+      updateMap(app1.map, app1.mapData, app1)
+    }, "json")
 
-  } else {
-    searchInput.classList.add('warning-flash');
+  }else {
+    searchInput.classList.add('warning-flash')
   }
 });
+
 searchInput.addEventListener('animationend', function () {
   this.classList.remove('warning-flash')
 });
 
 // press enter triggers submit
-$("#search-input").keyup(function (event) {
+$('#search-input').keyup(function (event) {
   if (event.keyCode === 13) {
-    $("#search-submit").click();
+    $('#search-submit').click()
   }
 });
