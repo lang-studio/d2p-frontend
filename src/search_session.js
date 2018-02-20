@@ -95,8 +95,29 @@ class SearchSession{
         this.dot_relationships = new DotRelationship()
     }
 
-    post_api(dots){
-      // update dot_relationships, known_dots, dots_to_render (todo)
+    post_api(parent_dot, child_dots){
+      // update known_dots to include both parent_dot and all child_dots
+      let that = this;
+      child_dots.forEach(function(dot){
+        if (!that.known_dots.includes(dot)){
+          that.known_dots.push(dot);
+        }
+      });
+
+      if (!this.known_dots.includes(parent_dot)){
+        this.known_dots.push(parent_dot)
+      }
+
+      // update dot_relationships
+      if (this.dot_relationships.m.has(parent_dot)){
+        let _c = this.dot_relationships.m.get(parent_dot);
+        let _nc = [...new Set(_c.concat(child_dots))];
+        this.dot_relationships.m.set(parent_dot, _nc);
+      } else {
+        this.dot_relationships.m.set(parent_dot, child_dots);
+      }
+
+      // update dots_to_render (todo later)
 
     }
 

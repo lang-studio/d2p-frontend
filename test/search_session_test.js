@@ -125,6 +125,34 @@ describe('dot relationship', function(){
 */
 
 describe('search session', function(){
+  describe('post_api', function(){
+    it('should update relationship properly -- parent_dot seen in relationship', function(){
+      let session = new o.SearchSession(0, 'test');
+      session.dot_relationships.m.set(0, [1]);
+      session.post_api(0, [1,2,3]);
+      assert.deepEqual(session.dot_relationships.m.get(0), [1,2,3]);
+    });
+
+    it('should update relationship properly -- parent_dot never seen in relationship', function(){
+      let session = new o.SearchSession(0, 'test');
+      session.post_api(0, [1,2,3]);
+      assert.deepEqual(session.dot_relationships.m.get(0), [1,2,3]);
+    });
+
+    it('should update known dots properly -- dots seen before', function(){
+      let session = new o.SearchSession(0, 'test');
+      session.known_dots = [0,1,2,3];
+      session.post_api(0, [1,2,3]);
+      assert.deepEqual(new Set(session.known_dots), new Set([0,1,2,3]));
+    });
+
+    it('should update known dots properly -- dots never seen before', function(){
+      let session = new o.SearchSession(0, 'test');
+      session.post_api(0, [1,2,3]);
+      assert.deepEqual(new Set(session.known_dots), new Set([0,1,2,3]));
+    });
+  });
+
     describe('post_drag_card', function(){
         it('cards_to_render is empty, expected to have one if new card is immediate child', function(){
             // session = 0; new card = 1; relation = 0 -> [1]
