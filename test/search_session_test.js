@@ -129,27 +129,36 @@ describe('search session', function(){
     it('should update relationship properly -- parent_dot seen in relationship', function(){
       let session = new o.SearchSession(0, 'test');
       session.dot_relationships.m.set(0, [1]);
-      session.post_api(0, [1,2,3]);
-      assert.deepEqual(session.dot_relationships.m.get(0), [1,2,3]);
+      let d1 = new o.Dot(0,0,0);
+      let d2 = new o.Dot(1,0,0);
+      let d3 = new o.Dot(2,0,0);
+      session.post_api(d1, [d2, d3]);
+      assert.deepEqual(session.dot_relationships.m.get(0), [1,2]);
     });
 
     it('should update relationship properly -- parent_dot never seen in relationship', function(){
       let session = new o.SearchSession(0, 'test');
-      session.post_api(0, [1,2,3]);
-      assert.deepEqual(session.dot_relationships.m.get(0), [1,2,3]);
+      let d1 = new o.Dot(0,0,0);
+      let d2 = new o.Dot(1,0,0);
+      session.post_api(d1, [d2]);
+      assert.deepEqual(session.dot_relationships.m.get(0), [1]);
     });
 
     it('should update known dots properly -- dots seen before', function(){
       let session = new o.SearchSession(0, 'test');
-      session.known_dots = [0,1,2,3];
-      session.post_api(0, [1,2,3]);
-      assert.deepEqual(new Set(session.known_dots), new Set([0,1,2,3]));
+      session.known_dots = [new o.Dot(0,0,0), new o.Dot(1,0,0)];
+      let d1 = new o.Dot(0,0,0);
+      let d2 = new o.Dot(1,0,0);
+      session.post_api(d1, [d2]);
+      assert.deepEqual(new Set(session.known_dots.map(d => d.destination_id)), new Set([0,1]));
     });
 
     it('should update known dots properly -- dots never seen before', function(){
       let session = new o.SearchSession(0, 'test');
-      session.post_api(0, [1,2,3]);
-      assert.deepEqual(new Set(session.known_dots), new Set([0,1,2,3]));
+      let d1 = new o.Dot(0,0,0);
+      let d2 = new o.Dot(1,0,0);
+      session.post_api(d1, [d2]);
+      assert.deepEqual(new Set(session.known_dots.map(d => d.destination_id)), new Set([0,1]));
     });
   });
 

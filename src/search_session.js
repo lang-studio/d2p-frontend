@@ -96,25 +96,29 @@ class SearchSession{
     }
 
     post_api(parent_dot, child_dots){
+      // input are Dot instances
       // update known_dots to include both parent_dot and all child_dots
+      let known_dots_ids = this.known_dots.map(d => d.destination_id);
       let that = this;
       child_dots.forEach(function(dot){
-        if (!that.known_dots.includes(dot)){
+        if (!known_dots_ids.includes(dot.destination_id)){
           that.known_dots.push(dot);
         }
       });
 
-      if (!this.known_dots.includes(parent_dot)){
+      if (!known_dots_ids.includes(parent_dot.destination_id)){
         this.known_dots.push(parent_dot)
       }
 
       // update dot_relationships
-      if (this.dot_relationships.m.has(parent_dot)){
-        let _c = this.dot_relationships.m.get(parent_dot);
-        let _nc = [...new Set(_c.concat(child_dots))];
-        this.dot_relationships.m.set(parent_dot, _nc);
+      let parent_dot_id = parent_dot.destination_id;
+      let child_dots_ids = child_dots.map(d => d.destination_id);
+      if (this.dot_relationships.m.has(parent_dot_id)){
+        let _c = this.dot_relationships.m.get(parent_dot_id);
+        let _nc = [...new Set(_c.concat(child_dots_ids))];
+        this.dot_relationships.m.set(parent_dot_id, _nc);
       } else {
-        this.dot_relationships.m.set(parent_dot, child_dots);
+        this.dot_relationships.m.set(parent_dot_id, child_dots_ids);
       }
 
       // update dots_to_render (todo later)
