@@ -63,6 +63,10 @@ function updateMap(map, data, app1) {
             app1.leftPane.description = data[i]['description'];
             app1.leftPane.thumbnail = data[i]['thumbnail'];
 
+          map.setOptions({
+            draggable: true
+          });
+
 
         });
 
