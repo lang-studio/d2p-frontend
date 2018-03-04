@@ -41,7 +41,6 @@ function updateMap(map, data, app1) {
         markers[i].addListener('mouseover', function (e) {
             overlays[this.id].show();
             // disable map draggling
-          console.log("disable drag");
             map.setOptions({
                 draggable: false
             });
@@ -49,11 +48,6 @@ function updateMap(map, data, app1) {
 
         markers[i].addListener('mouseout', function () {
             overlays[this.id].hide();
-            // enable map draggling
-          console.log("enable drag");
-            map.setOptions({
-                draggable: true
-            })
         });
 
         markers[i].addListener('click', function () {
@@ -76,7 +70,7 @@ function updateMap(map, data, app1) {
     map.fitBounds(bounds);
     map.setCenter(bounds.getCenter());
 
-    setMarkerDraggable(markers);
+    setMarkerDraggable(markers, map);
 
 }
 
@@ -139,7 +133,7 @@ InfoWindow.prototype.show = function () {
     }
 };
 
-function setMarkerDraggable(markers) {
+function setMarkerDraggable(markers, map) {
     $(markers).each(function () {
         const markerInDOM = this.getContent();
         $(markerInDOM).attr("destination-id", this.id);
@@ -148,7 +142,12 @@ function setMarkerDraggable(markers) {
             zIndex: 2,
             appendTo: 'body',
             helper: 'clone',
-            containment: 'body'
+            containment: 'body',
+            stop: function(event, ui){
+              map.setOptions({
+                draggable: true
+              });
+            }
         });
     });
 }
