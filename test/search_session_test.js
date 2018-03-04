@@ -98,6 +98,18 @@ describe('dot relationship', function(){
             assert.deepEqual(actual, expected);
         });
 
+        it('should return identical results when calling twice', function(){
+          let d = new o.DotRelationship();
+          d.m.set(0, [1]);
+
+          let actual = d.get_lineage(1);
+          let expected = [0];
+          assert.deepEqual(actual, expected);
+
+          let actual2 = d.get_lineage(1);
+          assert.deepEqual(actual2, expected);
+        });
+
         it('should calculate lineage correctly for jump level', function(){
             // 0->[1]; 1->[2];
             let d = new o.DotRelationship();
@@ -173,6 +185,18 @@ describe('search session', function(){
 
             assert.equal(session.cards_to_render.length, 1);
         });
+
+      it('do not render duplicates', function(){
+        // session = 0; new card = 1; relation = 0 -> [1]
+        let session = new o.SearchSession(0,'test');
+        session.dot_relationships.m.set(0, [1]);
+        let dot = new o.Dot(1, 0, 0);
+
+        session.post_drag_dot(dot);
+        session.post_drag_dot(dot);
+
+        assert.equal(session.cards_to_render.length, 1);
+      });
 
         it('cards_to_render is empty, know to insert level between search session and new card (session = scotland, card = glasgow church, expected = card(glasgow, child_cards = [glasgow church])), but do NOT include session itself', function(){
             let session = new o.SearchSession(0,'test');

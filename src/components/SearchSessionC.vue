@@ -7,6 +7,7 @@
         :child_cards="card.child_cards"
       />
     </div>
+    <div class="dot-droppable"></div>
   </div>
 
 </template>
@@ -14,13 +15,36 @@
 <script>
 
   import CardC from './CardC'
+  const o = require('../search_session.js');
   export default {
     name: "search-session-c",
     props:['search_session'],
-    components:{CardC}
+    components:{CardC},
+    mounted: function(){
+      const e = this;
+      $(".dot-droppable").droppable({
+        accept:".marker-draggable",
+        drop: function (event, ui) {
+          const did = Number(ui.draggable.attr("destination-id"));
+          const name = ui.draggable.attr("name");
+          const lat = Number(ui.draggable.attr("lat"));
+          const lng = Number(ui.draggable.attr('lng'));
+          let dot = new o.Dot(did, name, lat, lng);
+
+          e.search_session.post_drag_dot(dot);
+
+        }
+      })
+    }
   }
 </script>
 
 <style scoped>
+
+  .dot-droppable{
+    width: 100px;
+    height: 30px;
+    background-color: yellow;
+  }
 
 </style>

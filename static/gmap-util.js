@@ -35,7 +35,8 @@ function updateMap(map, data, app1) {
             draggable: false,
             flat: true,
             content: contentDiv,
-            id: i
+            id: i,
+            dao:d
         }));
 
         markers[i].addListener('mouseover', function (e) {
@@ -135,19 +136,23 @@ InfoWindow.prototype.show = function () {
 
 function setMarkerDraggable(markers, map) {
     $(markers).each(function () {
-        const markerInDOM = this.getContent();
-        $(markerInDOM).attr("destination-id", this.id);
-        $(markerInDOM).addClass('marker-draggable');
-        $(markerInDOM).draggable({
-            zIndex: 2,
-            appendTo: 'body',
-            helper: 'clone',
-            containment: 'body',
-            stop: function(event, ui){
-              map.setOptions({
-                draggable: true
-              });
-            }
-        });
+      const markerInDOM = this.getContent();
+      $(markerInDOM).attr("destination-id", this.dao['id']);
+      $(markerInDOM).attr("name", this.dao['name']);
+      $(markerInDOM).attr("lat", this.dao['lat']);
+      $(markerInDOM).attr("lng", this.dao['lng']);
+
+      $(markerInDOM).addClass('marker-draggable');
+      $(markerInDOM).draggable({
+          zIndex: 2,
+          appendTo: 'body',
+          helper: 'clone',
+          containment: 'body',
+          stop: function(event, ui){
+            map.setOptions({
+              draggable: true
+            });
+          }
+      });
     });
 }

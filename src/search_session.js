@@ -65,7 +65,12 @@ class DotRelationship{
     get_lineage(i){
         // return a list of parent_ids, ordered from closest to furthest
         let res = [];
-        let _m = this.m;
+        // deep copy
+        let _m = new Map([]);
+        this.m.forEach(function(v,k,m){
+          _m.set(k,v)
+        });
+
         let current_child = i;
         let found = true;
         while(_m.size > 0 && found){
@@ -157,9 +162,11 @@ class SearchSession{
                     inserted = true
                 }
             });
-            // if no card is inserted, then append
+            // if no card is inserted, then append, only when there's no duplicates
             if (!inserted){
-                this.cards_to_render.push(new_card)
+                if (!this.cards_to_render.map(c => c.dot.destination_id).includes(dot.destination_id)){
+                  this.cards_to_render.push(new_card)
+                }
             }
             // todo: what if new card is parent to one/many current cards?
             // ^ should never happen, because we always construct full lineage between session and first drag object
