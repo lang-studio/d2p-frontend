@@ -64,9 +64,9 @@ searchSubmitBtn.addEventListener('click', function () {
     let s = new o.SearchSession(destination_id, lastSuggestion.value);
     app1.search_sessions.push(s);
     // todo: call backend to get child_dots, call updateMap
-    let resource = app.$resource('http://localhost:3000/destinations');
+    let resource = app.$resource('http://localhost:3000/search/' + destination_id);
     resource.get().then(response => {
-      let d = response.body;
+      let d = response.body['children'];
       console.log(d);
       app1.mapData = d;
       updateMap(app1.map, app1.mapData, app1) ;// todo: this will be calculated by search_session.dots_to_render in the future
