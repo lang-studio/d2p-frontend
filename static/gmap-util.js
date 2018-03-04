@@ -41,6 +41,7 @@ function updateMap(map, data, app1) {
         markers[i].addListener('mouseover', function (e) {
             overlays[this.id].show();
             // disable map draggling
+          console.log("disable drag");
             map.setOptions({
                 draggable: false
             });
@@ -49,6 +50,7 @@ function updateMap(map, data, app1) {
         markers[i].addListener('mouseout', function () {
             overlays[this.id].hide();
             // enable map draggling
+          console.log("enable drag");
             map.setOptions({
                 draggable: true
             })

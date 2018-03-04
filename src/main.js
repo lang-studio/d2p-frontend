@@ -19,7 +19,6 @@ const app = new Vue({
   router,
   components: { App },
   template: '<App/>'
-
 });
 
 const app1 = app.$root.$children[0];
@@ -54,18 +53,21 @@ $('#search-input').devbridgeAutocomplete({
 
 searchSubmitBtn.addEventListener('click', function () {
   if (isValidSearch) {
-    console.log(lastSuggestion);
-    const destination_id = lastSuggestion.data;
+    console.log(lastSuggestion); // todo: autocomplete must return a dot for parent_dot as well
+    const destination_id = lastSuggestion.data; // this is parent_dot;
+    // mock parent_dot for now
+    let parent_dot = new o.Dot(destination_id, 'Scotland', 56.4907, -4.2026);
     // push a new search session
     let s = new o.SearchSession(destination_id, lastSuggestion.value);
     app1.search_sessions.push(s);
-    // todo: call backend to populate data, call updateMap
-    // http://localhost:3000/destinations
+    // todo: call backend to get child_dots, call updateMap
     $.get("http://localhost:3000/destinations", function (d) {
       console.log(d);
       app1.mapData = d;
-      updateMap(app1.map, app1.mapData, app1)
-      // todo: call s.post_api
+      updateMap(app1.map, app1.mapData, app1) ;// todo: this will be calculated by search_session.dots_to_render in the future
+      // call s.post_api to update session's known dots
+      let child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng));
+      s.post_api(parent_dot, child_dots);
     }, "json")
 
   }else {

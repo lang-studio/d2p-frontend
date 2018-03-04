@@ -125,39 +125,41 @@ class SearchSession{
 
     }
 
-    post_drag_card(card){
+    post_drag_dot(dot){
         // update cards_to_render according to dot_relationships
-        let lineage = this.dot_relationships.get_lineage(card.dot.destination_id);
+        let lineage = this.dot_relationships.get_lineage(dot.destination_id);
         // session's destination_id must be part of lineage
         if (!lineage.includes(this.destination_id)){
             throw "session's destination_id must be part of new card's lineage!"
         }
 
+        let new_card = new Card(dot, []);
+
         if (this.cards_to_render.length === 0){
             // is session immediate parent?
             if (lineage[0] === this.destination_id){
-                this.cards_to_render.push(card)
+                this.cards_to_render.push(new_card)
             } else {
                 // session is not immediate parent, construct all cards in between
                 // NOTE: do NOT include session
                 let i = lineage.indexOf(this.destination_id);
                 let lineage_until_session = lineage.slice(0,i);
                 // add itself back
-                lineage_until_session.unshift(card.dot.destination_id);
+                lineage_until_session.unshift(dot.destination_id);
                 this.cards_to_render.push(Card.from_lineage(lineage_until_session, this.known_dots.filter(d => lineage_until_session.includes(d.destination_id))))
             }
 
         }else{
             let inserted = false;
             this.cards_to_render.forEach(function(c){
-                let b = c.insert(card, lineage);
+                let b = c.insert(new_card, lineage);
                 if (b) {
                     inserted = true
                 }
             });
             // if no card is inserted, then append
             if (!inserted){
-                this.cards_to_render.push(card)
+                this.cards_to_render.push(new_card)
             }
             // todo: what if new card is parent to one/many current cards?
             // ^ should never happen, because we always construct full lineage between session and first drag object
