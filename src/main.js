@@ -3,6 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import VueResource from 'vue-resource'
+
+Vue.use(VueResource);
 
 Vue.config.productionTip = false;
 
@@ -61,14 +64,16 @@ searchSubmitBtn.addEventListener('click', function () {
     let s = new o.SearchSession(destination_id, lastSuggestion.value);
     app1.search_sessions.push(s);
     // todo: call backend to get child_dots, call updateMap
-    $.get("http://localhost:3000/destinations", function (d) {
+    let resource = app.$resource('http://localhost:3000/destinations');
+    resource.get().then(response => {
+      let d = response.body;
       console.log(d);
       app1.mapData = d;
       updateMap(app1.map, app1.mapData, app1) ;// todo: this will be calculated by search_session.dots_to_render in the future
       // call s.post_api to update session's known dots
       let child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng));
       s.post_api(parent_dot, child_dots);
-    }, "json")
+    });
 
   }else {
     searchInput.classList.add('warning-flash')
