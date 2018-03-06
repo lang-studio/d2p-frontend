@@ -48,7 +48,6 @@
     data: function(){
       return {
         search_sessions:[],
-        mapData:[],
         leftPane: { // todo: move this to component
           showBtn: false,
           isActive: false,
