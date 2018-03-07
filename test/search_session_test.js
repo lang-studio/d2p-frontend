@@ -158,11 +158,14 @@ describe('search session', function(){
 
     it('should update known dots properly -- dots seen before', function(){
       let session = new o.SearchSession(0, 'test');
-      session.known_dots = [new o.Dot(0,0,0), new o.Dot(1,0,0)];
+      session.known_dots = new Map([
+        [0, new o.Dot(0,0,0)],
+        [1, new o.Dot(1,0,0)]
+      ]);
       let d1 = new o.Dot(0,0,0);
       let d2 = new o.Dot(1,0,0);
       session.post_api(d1, [d2]);
-      assert.deepEqual(new Set(session.known_dots.map(d => d.destination_id)), new Set([0,1]));
+      assert.deepEqual(new Set(Array.from(session.known_dots.keys())), new Set([0,1]));
     });
 
     it('should update known dots properly -- dots never seen before', function(){
@@ -170,7 +173,7 @@ describe('search session', function(){
       let d1 = new o.Dot(0,0,0);
       let d2 = new o.Dot(1,0,0);
       session.post_api(d1, [d2]);
-      assert.deepEqual(new Set(session.known_dots.map(d => d.destination_id)), new Set([0,1]));
+      assert.deepEqual(new Set(Array.from(session.known_dots.keys())), new Set([0,1]));
     });
   });
 
@@ -203,12 +206,12 @@ describe('search session', function(){
             // session = 0; new card = 2; relation = 0 -> [1]; 1 -> [2];
             session.dot_relationships.m.set(0, [1]);
             session.dot_relationships.m.set(1, [2]);
-            session.known_dots = [
-                new o.Dot(0,0,0),
-                new o.Dot(1,0,0),
-                new o.Dot(2,0,0)
-            ]
-            let dot = session.known_dots[2];
+            session.known_dots = new Map([
+                [0, new o.Dot(0,0,0)],
+                [1, new o.Dot(1,0,0)],
+                [2, new o.Dot(2,0,0)]
+            ])
+            let dot = session.known_dots.get(2);
 
             session.post_drag_dot(dot);
             // should have one nested card

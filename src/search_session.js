@@ -94,7 +94,7 @@ class SearchSession{
         this.display_name = display_name;
 
         // init empty values
-        this.known_dots = [];// list of Dot instances
+        this.known_dots = new Map([]);// map of id -> Dot
         this.dots_to_render = []; // list of Dot instances
         this.cards_to_render = []; // list of Card instances
         this.dot_relationships = new DotRelationship()
@@ -103,16 +103,16 @@ class SearchSession{
     post_api(parent_dot, child_dots){
       // input are Dot instances
       // update known_dots to include both parent_dot and all child_dots
-      let known_dots_ids = this.known_dots.map(d => d.destination_id);
+      let known_dots_ids = Array.from(this.known_dots.keys());
       let that = this;
       child_dots.forEach(function(dot){
         if (!known_dots_ids.includes(dot.destination_id)){
-          that.known_dots.push(dot);
+          that.known_dots.set(dot.destination_id, dot);
         }
       });
 
       if (!known_dots_ids.includes(parent_dot.destination_id)){
-        this.known_dots.push(parent_dot)
+        this.known_dots.set(parent_dot.destination_id, parent_dot)
       }
 
       // update dot_relationships
@@ -151,7 +151,9 @@ class SearchSession{
                 let lineage_until_session = lineage.slice(0,i);
                 // add itself back
                 lineage_until_session.unshift(dot.destination_id);
-                this.cards_to_render.push(Card.from_lineage(lineage_until_session, this.known_dots.filter(d => lineage_until_session.includes(d.destination_id))))
+                this.cards_to_render.push(Card.from_lineage(
+                  lineage_until_session,
+                  Array.from(this.known_dots.values()).filter(dot => lineage_until_session.includes(dot.destination_id))))
             }
 
         }else{
