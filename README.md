@@ -25,9 +25,11 @@ npm test
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-### How to run
-- start `python3 -m http.server` at dev-resources/ directory. This starts a local cdn for images.
-- start `json-server --watch dev-resources/db.json`. This starts a mock json server.
+### How to run dev environment
+
+```bash
+./dev.sh
+```
 
 ### How to run unit tests
 
