@@ -65,16 +65,17 @@ searchSubmitBtn.addEventListener('click', function () {
     rootApp.search_sessions.push(s);
     // update map's active_session
     rootMap.active_session = s;
-    // todo: call backend to get child_dots, call updateMap
+
     let resource = app.$resource('http://localhost:3000/search/' + destination_id);
+
     resource.get().then(response => {
       let d = response.body['children'];
       console.log(d);
-      updateMap(rootApp.map, d, rootApp) ;// todo: this will be calculated by search_session.dots_to_render in the future
       // call s.post_api to update session's known dots
       let child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng));
       s.post_api(parent_dot, child_dots);
-      // let map render the top level dots
+      // render map
+      rootMap.render_first_search(d);
     });
 
   }else {

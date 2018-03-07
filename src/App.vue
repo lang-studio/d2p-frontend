@@ -37,14 +37,6 @@
   export default {
     name: 'App',
     components: {SearchSessionC},
-    mounted: function () {
-      // init empty map
-      this.map = new google.maps.Map($('#map')[0], {
-        // below are init properties that will be updated by bounds later
-        zoom: 10,
-        center: new google.maps.LatLng(0, 0)
-      });
-    },
     data: function(){
       return {
         search_sessions:[],

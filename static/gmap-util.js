@@ -12,7 +12,7 @@ function InfoWindow(anchor, d, map) {
     this.setMap(map);
 }
 
-function updateMap(map, data, app1) {
+function redraw(map, data, app) {
 
     const overlays = [];
     const markers = [];
@@ -56,17 +56,17 @@ function updateMap(map, data, app1) {
             // hide overlay
             overlays[this.id].hide();
             // enable the left pane toggler
-            app1.leftPane.isActive = true;
-            app1.leftPane.showBtn = true;
+            app.leftPane.isActive = true;
+            app.leftPane.showBtn = true;
             // update left info pane values
-            app1.leftPane.name = data[i]['name'];
-            app1.leftPane.description = data[i]['description'];
-            app1.leftPane.thumbnail = data[i]['thumbnail'];
+            app.leftPane.name = data[i]['name'];
+            app.leftPane.description = data[i]['description'];
+            app.leftPane.thumbnail = data[i]['thumbnail'];
 
             map.setOptions({
               draggable: true
             });
-            
+
         });
 
         bounds = bounds.extend(latLng);

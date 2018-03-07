@@ -13,9 +13,16 @@ class Map {
   init_gmap(){
     // only called in main.js; not called in tests; all google related calls come in here;
     // setup callbacks: drag, zoomin/out
-    // dummy test to verify calling google api in main.js works
-    this.latLng = new google.maps.LatLng(0,0);
-    console.log(this.latLng);
+    this.gmap = new google.maps.Map($('#map')[0], {
+      // below are init properties that will be updated by bounds later
+      zoom: 10,
+      center: new google.maps.LatLng(0, 0)
+    });
+  }
+
+  render_first_search(data){
+    redraw(this.gmap, data, this.app);
+    this.dots_visible = data.map(d => d['id']);
   }
 }
 
