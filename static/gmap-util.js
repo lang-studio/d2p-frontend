@@ -12,10 +12,9 @@ function InfoWindow(anchor, d, map) {
     this.setMap(map);
 }
 
-function redraw(map, data, app) {
+function redraw(map, markers, data, app) {
 
     const overlays = [];
-    const markers = [];
 
     // add markers and center map
     let bounds = new google.maps.LatLngBounds();
