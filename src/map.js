@@ -1,10 +1,80 @@
 let o = require ('./search_session.js'); // probably don't need this
 
+class MapState {
+  constructor(zoomLevel){
+    this.markers = [];
+    this.zoomLevel = zoomLevel;
+  }
+}
+
 class Map {
   constructor(session, app){
     this.rendered_dots = []; // only update after redraw
     this.active_session = session;
     this.app = app;
+  }
+
+  canFitMap(dots, bounds){
+    // whether it "makes sense" to draw all dots on this bounds; test required
+    return true
+  }
+
+  _addZoomCallback(){
+
+    let e = this;
+
+    this.gmap.addListener('zoom_changed', function(){
+      let newZoom = this.getZoom();
+      if (newZoom > e.mapState.zoomLevel){
+        // zoom in
+        // how many dots can we see now
+        let bounds = this.getBounds();
+
+        function withinBounds(dot){
+          let l = new google.maps.LatLng(dot.lat, dot.lng);
+          return bounds.contains(l);
+        }
+
+        let visible_dots = e.rendered_dots.map(i => e.active_session.known_dots.get(i)).filter(withinBounds);
+
+        if (visible_dots.length === 1){
+          // have we fetched its children?
+          let visible_dot = visible_dots[0];
+          let child_dots = [];
+          if (e.active_session.dot_relationships.m.has(visible_dot.destination_id)){
+            let child_dot_ids = e.active_session.dot_relationships.m.get(visible_dot.destination_id);
+            child_dots = child_dot_ids.map(i => e.active_session.known_dots.get(i));
+          }else {
+            // call api
+            let resource = e.app.$resource('http://localhost:3000/search/' + visible_dot.destination_id);
+
+            resource.get().then(response => {
+              let d = response.body['children'];
+              child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng));
+              e.active_session.post_api(visible_dot, child_dots);
+            });
+          }
+
+          // should we draw?
+          if (child_dots.length > 0 && e.canFitMap(child_dots, bounds)){
+
+          }
+
+        } else {
+          // do nothing
+        }
+
+        console.log("zoom in");
+        console.log(visible_dots.length);
+
+      } else {
+        // zoom out, maybe render parent instead of children dots
+      }
+
+      // update mapState
+      e.mapState.zoomLevel = newZoom;
+
+    })
   }
 
   init_gmap(){
@@ -18,19 +88,26 @@ class Map {
     });
 
     // init markers
-    this.gmap_markers = [];
+    this.mapState = new MapState(this.gmap.getZoom());
 
+    this._addZoomCallback();
+
+  }
+
+
+
+  _clearMarkers(){
+    for (let i = 0; i < this.mapState.markers.length; i++){
+      this.mapState.markers[i].setMap(null);
+    }
+    this.mapState.markers = [];
   }
 
   render(data){
     // used whenever map's markers are redrawn
-    // remove previously drawn markers
-    for (let i = 0; i < this.gmap_markers.length; i++){
-      this.gmap_markers[i].setMap(null);
-    }
-    this.gmap_markers = [];
-
-    redraw(this.gmap, this.gmap_markers, data, this.app);
+    // todo: change data to an enriched dot object
+    this._clearMarkers();
+    redraw(this.gmap, this.mapState.markers, data, this.app);
     this.rendered_dots = data.map(d => d['id']);
   }
 }
