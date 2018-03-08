@@ -95,7 +95,6 @@ class SearchSession{
 
         // init empty values
         this.known_dots = new Map([]);// map of id -> Dot
-        this.dots_to_render = []; // list of Dot instances
         this.cards_to_render = []; // list of Card instances
         this.dot_relationships = new DotRelationship()
     }
@@ -125,9 +124,6 @@ class SearchSession{
       } else {
         this.dot_relationships.m.set(parent_dot_id, child_dots_ids);
       }
-
-      // update dots_to_render (todo later)
-
     }
 
     post_drag_dot(dot){
