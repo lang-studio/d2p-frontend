@@ -32,7 +32,7 @@
           "name": "Edinburgh castle",
           "lat": 55.9486,
           "lng": -3.1999,
-          "thumbnail": "http://localhost:8000/images/edinburgh-castle-thumbnail.jpeg",
+          "thumbnail": "http://localhost:8000/images/edinburgh-castle-thumbnail.jpg",
           "star_rating": 4.5,
           "description": "An 11th-century castle and barracks housing the Crown Jewels and National War Museum of Scotland.",
           "id": 4

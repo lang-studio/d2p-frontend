@@ -75,8 +75,8 @@ searchSubmitBtn.addEventListener('click', function () {
       let child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng,
         new o.EnrichedDotData(s.thumbnail, s.star_rating, s.description)));
       s.post_api(parent_dot, child_dots);
-      // render map
-      rootMap.render(child_dots);
+      // render map, refit
+      rootMap.render(child_dots, true);
     });
 
   }else {

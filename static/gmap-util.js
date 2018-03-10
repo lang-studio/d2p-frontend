@@ -12,7 +12,7 @@ function InfoWindow(anchor, d, map) {
     this.setMap(map);
 }
 
-function redraw(map, markers, dots, app) {
+function redraw(map, markers, dots, app, refit = true) {
 
     const overlays = [];
 
@@ -70,8 +70,12 @@ function redraw(map, markers, dots, app) {
 
         bounds = bounds.extend(latLng);
     }
+
+    // these are only called on first search
+  if (refit){
     map.fitBounds(bounds);
     map.setCenter(bounds.getCenter());
+  }
 
     setMarkerDraggable(markers, map);
 

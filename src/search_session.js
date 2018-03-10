@@ -43,6 +43,16 @@ class Card{
         return card;
     }
 
+    contains(dot){
+      if (this.dot.destination_id === dot.destination_id){
+        return true
+      } else {
+        return this.child_cards.some(function(c){
+          return c.contains(dot)
+        })
+      }
+    }
+
     insert(card, lineage){
         // update the instance according to lineage if new card is a child at any level, does NOT return a copy
         // return a boolean whether card is updated or not
@@ -50,8 +60,13 @@ class Card{
         let immediate_parent = lineage[0]; // we only need to know immediate parent
 
         if (this.dot.destination_id === immediate_parent){
+          // no duplicates
+          if (this.child_cards.map(c => c.dot.destination_id).includes(card.dot.destination_id)){
+            return false
+          } else {
             this.child_cards.push(card);
             return true
+          }
         }
         else {
             if (this.child_cards.length === 0){
@@ -170,10 +185,11 @@ class SearchSession{
                 }
             });
             // if no card is inserted, then append, only when there's no duplicates
+          // we should check all nested cards for duplicates
             if (!inserted){
-                if (!this.cards_to_render.map(c => c.dot.destination_id).includes(dot.destination_id)){
-                  this.cards_to_render.push(new_card)
-                }
+              if (!this.cards_to_render.some(function(c){return c.contains(dot)})){
+                this.cards_to_render.push(new_card)
+              }
             }
             // todo: what if new card is parent to one/many current cards?
             // ^ should never happen, because we always construct full lineage between session and first drag object

@@ -14,6 +14,20 @@ class Map {
     this.app = app;
   }
 
+  _clearMarkers(){
+    for (let i = 0; i < this.mapState.markers.length; i++){
+      this.mapState.markers[i].setMap(null);
+    }
+    this.mapState.markers = [];
+  }
+
+  render(dots, refit){
+    // used whenever map's markers are redrawn
+    this._clearMarkers();
+    redraw(this.gmap, this.mapState.markers, dots, this.app, refit);
+    this.rendered_dots = dots.map(d => d.destination_id);
+  }
+
   canFitMap(dots, bounds){
     // whether it "makes sense" to draw all dots on this bounds; test required
     return true
@@ -50,16 +64,16 @@ class Map {
 
             resource.get().then(response => {
               let d = response.body['children'];
-              child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng));
+              child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng,
+                new o.EnrichedDotData(s.thumbnail, s.star_rating, s.description)));
               e.active_session.post_api(visible_dot, child_dots);
+
+              // should we draw?
+              if (child_dots.length > 0 && e.canFitMap(child_dots, bounds)){
+                e.render(child_dots, false); // don't refit
+              }
             });
           }
-
-          // should we draw?
-          if (child_dots.length > 0 && e.canFitMap(child_dots, bounds)){
-
-          }
-
         } else {
           // do nothing
         }
@@ -96,19 +110,7 @@ class Map {
 
 
 
-  _clearMarkers(){
-    for (let i = 0; i < this.mapState.markers.length; i++){
-      this.mapState.markers[i].setMap(null);
-    }
-    this.mapState.markers = [];
-  }
 
-  render(dots){
-    // used whenever map's markers are redrawn
-    this._clearMarkers();
-    redraw(this.gmap, this.mapState.markers, dots, this.app);
-    this.rendered_dots = dots.map(d => d.destination_id);
-  }
 }
 
 exports.Map = Map;

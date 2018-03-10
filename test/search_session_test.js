@@ -57,7 +57,26 @@ describe('card', function(){
             let actual = c.insert(new_card, [0])
             assert.equal(actual, true)
             assert.equal(c.child_cards.length, 1)
-        })
+        });
+
+        it ('should not insert duplicate cards', function(){
+          // this: 0; new card = 1; lineage = 0
+          let c = new o.Card(
+            new o.Dot(0,0,0),
+            []
+          );
+          let new_card = new o.Card(
+            new o.Dot(1,0,0),
+            []
+          );
+          let actual = c.insert(new_card, [0]);
+          assert.equal(actual, true);
+          assert.equal(c.child_cards.length, 1);
+
+          // insert again
+          let actual2 = c.insert(new_card, [0]);
+          assert.equal(actual2, false);
+        });
 
         it ('should correctly insert new card for jumping levels', function(){
             // this: 0->1; new card = 2; lineage = 1
@@ -199,6 +218,25 @@ describe('search session', function(){
         session.post_drag_dot(dot);
 
         assert.equal(session.cards_to_render.length, 1);
+      });
+
+      it ('do not render duplicates for nested cards', function(){
+        let session = new o.SearchSession(1, 'test');
+        session.dot_relationships.m.set(1, [2,3]);
+        session.dot_relationships.m.set(2, [4]);
+        session.known_dots = new Map([
+          [1, new o.Dot(1,0,0)],
+          [2, new o.Dot(2,0,0)],
+          [3, new o.Dot(3,0,0)],
+          [4, new o.Dot(4,0,0)]
+        ]);
+        let card = new o.Card(new o.Dot(2, 0, 0), [new o.Card(new o.Dot(4, 0, 0), [])]);
+        session.cards_to_render = [card];
+
+        session.post_drag_dot(new o.Dot(4, 0, 0));
+
+        assert.equal(session.cards_to_render.length, 1);
+
       });
 
         it('cards_to_render is empty, know to insert level between search session and new card (session = scotland, card = glasgow church, expected = card(glasgow, child_cards = [glasgow church])), but do NOT include session itself', function(){
