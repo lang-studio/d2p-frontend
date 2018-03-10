@@ -1,9 +1,18 @@
+class EnrichedDotData{
+  constructor(thumbnail, star_rating, description){
+    this.thumbnail = thumbnail;
+    this.star_rating = star_rating;
+    this.description = description;
+  }
+}
+
 class Dot{
-    constructor(destination_id, display_name, lat, lng){
+    constructor(destination_id, display_name, lat, lng, enriched_data = null){
         this.destination_id = destination_id;
         this.display_name = display_name;
         this.lat = lat;
-        this.lng = lng
+        this.lng = lng;
+        this.enriched_data = enriched_data;
     }
 }
 
@@ -175,6 +184,7 @@ class SearchSession{
 }
 
 // export class definitions, for test
+exports.EnrichedDotData = EnrichedDotData;
 exports.Dot = Dot;
 exports.Card = Card;
 exports.DotRelationship = DotRelationship;

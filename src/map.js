@@ -103,12 +103,11 @@ class Map {
     this.mapState.markers = [];
   }
 
-  render(data){
+  render(dots){
     // used whenever map's markers are redrawn
-    // todo: change data to an enriched dot object
     this._clearMarkers();
-    redraw(this.gmap, this.mapState.markers, data, this.app);
-    this.rendered_dots = data.map(d => d['id']);
+    redraw(this.gmap, this.mapState.markers, dots, this.app);
+    this.rendered_dots = dots.map(d => d.destination_id);
   }
 }
 

@@ -3,24 +3,24 @@ InfoWindow.prototype = new google.maps.OverlayView();
 
 function InfoWindow(anchor, d, map) {
     this.anchor_ = anchor;
-    this.image_ = d['thumbnail'];
-    this.name_ = d['name'];
-    this.starRating_ = d['star_rating'];
+    this.image_ = d.enriched_data.thumbnail;
+    this.name_ = d.display_name;
+    this.starRating_ = d.enriched_data.star_rating;
 
     this.div_ = null;
 
     this.setMap(map);
 }
 
-function redraw(map, markers, data, app) {
+function redraw(map, markers, dots, app) {
 
     const overlays = [];
 
     // add markers and center map
     let bounds = new google.maps.LatLngBounds();
-    for (let i = 0; i < data.length; i++) {
-        const d = data[i];
-        const latLng = new google.maps.LatLng(d['lat'], d['lng']);
+    for (let i = 0; i < dots.length; i++) {
+        const d = dots[i];
+        const latLng = new google.maps.LatLng(d.lat, d.lng);
 
         // prepare popup on mouseover
         overlays.push(new InfoWindow(latLng, d, map));
@@ -58,9 +58,9 @@ function redraw(map, markers, data, app) {
             app.leftPane.isActive = true;
             app.leftPane.showBtn = true;
             // update left info pane values
-            app.leftPane.name = data[i]['name'];
-            app.leftPane.description = data[i]['description'];
-            app.leftPane.thumbnail = data[i]['thumbnail'];
+            app.leftPane.name = dots[i].display_name;
+            app.leftPane.description = dots[i].enriched_data.description;
+            app.leftPane.thumbnail = dots[i].enriched_data.thumbnail;
 
             map.setOptions({
               draggable: true
@@ -139,10 +139,10 @@ InfoWindow.prototype.show = function () {
 function setMarkerDraggable(markers, map) {
     $(markers).each(function () {
       const markerInDOM = this.getContent();
-      $(markerInDOM).attr("destination-id", this.dao['id']);
-      $(markerInDOM).attr("name", this.dao['name']);
-      $(markerInDOM).attr("lat", this.dao['lat']);
-      $(markerInDOM).attr("lng", this.dao['lng']);
+      $(markerInDOM).attr("destination-id", this.dao.destination_id);
+      $(markerInDOM).attr("name", this.dao.display_name);
+      $(markerInDOM).attr("lat", this.dao.lat);
+      $(markerInDOM).attr("lng", this.dao.lng);
 
       $(markerInDOM).addClass('marker-draggable');
       $(markerInDOM).draggable({

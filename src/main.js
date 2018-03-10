@@ -72,10 +72,11 @@ searchSubmitBtn.addEventListener('click', function () {
       let d = response.body['children'];
       console.log(d);
       // call s.post_api to update session's known dots
-      let child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng));
+      let child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng,
+        new o.EnrichedDotData(s.thumbnail, s.star_rating, s.description)));
       s.post_api(parent_dot, child_dots);
       // render map
-      rootMap.render(d);
+      rootMap.render(child_dots);
     });
 
   }else {
