@@ -86,6 +86,36 @@ class DotRelationship{
         this.m = new Map([])// Map(parent_id -> child_ids), all ids are destination_id
     }
 
+    get_parent(i){
+      // return parent_id given child_id
+      let found = false;
+      let parent_id = null;
+      this.m.forEach(function(v,k,_){
+        if (!found){
+          if (v.includes(i)){
+            found = true;
+            parent_id = k;
+          }
+        }
+      });
+      return parent_id;
+    }
+
+    get_siblings(i){
+      // return siblings with common parent
+      let found = false;
+      let siblings = [];
+      this.m.forEach(function(v,k,_){
+        if (!found){
+          if (v.includes(i)){
+            found = true;
+            siblings = v;
+          }
+        }
+      });
+      return siblings;
+    }
+
     get_lineage(i){
         // return a list of parent_ids, ordered from closest to furthest
         let res = [];

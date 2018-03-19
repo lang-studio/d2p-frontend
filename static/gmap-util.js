@@ -40,14 +40,10 @@ function redraw(map, markers, dots, app, refit = true) {
 
         markers[i].addListener('mouseover', function (e) {
             overlays[this.id].show();
-            // disable map draggling
-            map.setOptions({
-                draggable: false
-            });
         });
 
         markers[i].addListener('mouseout', function () {
-            overlays[this.id].hide();
+          overlays[this.id].hide();
         });
 
         markers[i].addListener('click', function () {
@@ -77,7 +73,7 @@ function redraw(map, markers, dots, app, refit = true) {
     map.setCenter(bounds.getCenter());
   }
 
-    setMarkerDraggable(markers, map);
+  setMarkerDraggable(markers, map);
 
 }
 
@@ -154,6 +150,11 @@ function setMarkerDraggable(markers, map) {
           appendTo: 'body',
           helper: 'clone',
           containment: 'body',
+          start: function(event, ui){
+            map.setOptions({
+              draggable: false
+            });
+          },
           stop: function(event, ui){
             map.setOptions({
               draggable: true

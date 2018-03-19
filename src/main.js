@@ -77,6 +77,8 @@ searchSubmitBtn.addEventListener('click', function () {
       s.post_api(parent_dot, child_dots);
       // render map, refit
       rootMap.render(child_dots, true);
+      // add callback
+      rootMap._addZoomCallback();
     });
 
   }else {

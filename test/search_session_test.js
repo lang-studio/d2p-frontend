@@ -102,6 +102,26 @@ describe('card', function(){
 })
 
 describe('dot relationship', function(){
+
+  describe('get_parent', function(){
+    it('should find proper parent', function(){
+      let d = new o.DotRelationship();
+      d.m.set(0, [1]);
+      let actual = d.get_parent(1);
+      assert(actual == 0);
+    })
+  });
+
+  describe('get siblings', function(){
+    it('should find proper siblings', function(){
+      let d = new o.DotRelationship();
+      d.m.set(0, [1, 2]);
+      let actual = d.get_siblings(1);
+      let expected = [1, 2];
+      assert.deepEqual(actual, expected);
+    })
+  });
+
     describe('get_lineage', function(){
         it('should return empty list if relationship map is empty', function(){
             let d = new o.DotRelationship();

@@ -44,7 +44,7 @@
   .dot-droppable{
     width: 100px;
     height: 30px;
-    background-color: yellow;
+    background-color: green;
   }
 
 </style>
