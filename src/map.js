@@ -34,13 +34,13 @@ class Map {
   }
 
   canNotFitMap(dots, bounds){
-    // only used for testing
+    // only used for zoom out testing
     return false
   }
 
   _addZoomCallback(){
 
-    let e = this;
+    let e = this; // because "this" will be replaced in callback
 
     this.gmap.addListener('zoom_changed', function(){
       let newZoom = this.getZoom();
@@ -100,7 +100,7 @@ class Map {
         if (unique_parent_ids.length === 1){
           let unique_parent_id = unique_parent_ids[0];
           if (!(unique_parent_id === e.active_session.destination_id)){
-            // should we re-render? (child_dots是不是都挤到一块儿了？)
+            // should we re-render? (child_dots是不是都挤到一块儿了？) todo: this should be toplevel
             let bounds = this.getBounds();
             if (!(e.canNotFitMap(e.rendered_dots, bounds))){
               // fetch siblings

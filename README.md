@@ -31,6 +31,8 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 ./dev.sh
 ```
 
+This spawns a Python process in background. So remember to kill it when you are done. 
+
 ### How to run unit tests
 
 `npm test`
