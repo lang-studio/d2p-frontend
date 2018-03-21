@@ -2,7 +2,7 @@
 
 > A Vue.js project
 
-## Build Setup
+## Build
 
 ``` bash
 # install dependencies
@@ -41,18 +41,17 @@ This spawns a Python process in background. So remember to kill it when you are 
 - class name: camelCase
 - methods/variable name: underscore
 
-### Naming conventions
-main functionalities:
-- map related
-- autocomplete search: search-*
-
 ### TODO
+- [NEXT] able to remove dragged dots
 - remove dependency on jquery-ui (too big)
 - ~~separate into different css/js files~~
 - ~~autocomplete search input~~
 - ~~drag and drop to list view~~
 - enable links on google map other locations
 - custom destinations
+
+### BUG
+- zoom in, then drag, first drag does not work: can't reproduce...
 
 
 ### References

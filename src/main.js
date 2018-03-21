@@ -11,7 +11,9 @@ Vue.config.productionTip = false;
 
 const o = require('./search_session.js');
 const m = require('./map.js');
+const log = require('loglevel');
 
+log.setLevel('debug');
 
 /* eslint-disable no-new */
 const app = new Vue({
@@ -56,7 +58,7 @@ $('#search-input').devbridgeAutocomplete({
 
 searchSubmitBtn.addEventListener('click', function () {
   if (isValidSearch) {
-    console.log(lastSuggestion); // todo: autocomplete must return a dot for parent_dot as well
+    log.debug(lastSuggestion); // todo: autocomplete must return a dot for parent_dot as well
     const destination_id = lastSuggestion.data; // this is parent_dot;
     // mock parent_dot for now
     let parent_dot = new o.Dot(destination_id, 'Scotland', 56.4907, -4.2026);
@@ -70,7 +72,7 @@ searchSubmitBtn.addEventListener('click', function () {
 
     resource.get().then(response => {
       let d = response.body['children'];
-      console.log(d);
+      log.debug(d);
       // call s.post_api to update session's known dots
       let child_dots = d.map(s => new o.Dot(s.id, s.name, s.lat, s.lng,
         new o.EnrichedDotData(s.thumbnail, s.star_rating, s.description)));

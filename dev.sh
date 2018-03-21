@@ -1,4 +1,3 @@
-!#/usr/bin
 cd dev-resources/
 python3 -m http.server &
 cd ../

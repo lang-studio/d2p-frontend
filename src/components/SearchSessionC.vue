@@ -16,6 +16,8 @@
 
   import CardC from './CardC'
   const o = require('../search_session.js');
+  const log = require('loglevel');
+  log.setLevel('debug');
   export default {
     name: "search-session-c",
     props:['search_session'],
@@ -25,6 +27,7 @@
       $(".dot-droppable").droppable({
         accept:".marker-draggable",
         drop: function (event, ui) {
+          log.debug("dropped marker", ui.draggable.attr("destination-id"));
           const did = Number(ui.draggable.attr("destination-id"));
           const name = ui.draggable.attr("name");
           const lat = Number(ui.draggable.attr("lat"));

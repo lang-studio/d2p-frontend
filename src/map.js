@@ -1,4 +1,6 @@
 let o = require ('./search_session.js');
+let log = require('loglevel');
+log.setLevel('debug');
 
 class MapState {
   constructor(zoomLevel){
@@ -45,7 +47,7 @@ class Map {
     this.gmap.addListener('zoom_changed', function(){
       let newZoom = this.getZoom();
       if (newZoom > e.mapState.zoomLevel){
-        console.log("zoom in");
+        log.debug("zoom in");
         // zoom in
         // how many dots can we see now
         let bounds = this.getBounds();
@@ -56,7 +58,7 @@ class Map {
         }
 
         let visible_dots = e.rendered_dots.map(i => e.active_session.known_dots.get(i)).filter(withinBounds);
-        console.log("visible_dots", visible_dots);
+        log.debug("visible_dots", visible_dots);
 
         if (visible_dots.length === 1){
           // only attempt to re-draw if only one dot visible
@@ -91,11 +93,11 @@ class Map {
       } else {
         // fetch parent of all rendered_dots; if only one unique parent, render this parent + its siblings if possible
         // do nothing if parent is session's top level dot
-        console.log("zoom out");
-        console.log("rendered dots:", e.rendered_dots);
+        log.debug("zoom out");
+        log.debug("rendered dots:", e.rendered_dots);
         let parent_ids = e.rendered_dots.map(i => e.active_session.dot_relationships.get_parent(i));
         let unique_parent_ids = Array.from(new Set(parent_ids));
-        console.log("unique parents:", unique_parent_ids);
+        log.debug("unique parents:", unique_parent_ids);
 
         if (unique_parent_ids.length === 1){
           let unique_parent_id = unique_parent_ids[0];
@@ -109,12 +111,12 @@ class Map {
               e.render(sibling_dots, false);
             } else {
               // no need to re-render
-              console.log("map still suitable to render current dots");
+              log.debug("map still suitable to render current dots");
             }
 
           } else {
             // common parent is session; do nothing
-            console.log("common parent is session");
+            log.debug("common parent is session");
           }
         }
 
