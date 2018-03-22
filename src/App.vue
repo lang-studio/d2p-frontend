@@ -24,7 +24,10 @@
     <div class="col-3"> <!-- rendering search session -->
 
       <div v-for="search_session in search_sessions">
-        <SearchSessionC v-bind:search_session="search_session"></SearchSessionC>
+        <SearchSessionC 
+        v-bind:search_session="search_session"
+        v-on:remove_card_event_by_session="removeCard"
+        />
       </div>
 
     </div>
@@ -50,7 +53,11 @@
       }
     },
     methods: {
-
+      removeCard:function(session_destination_id, card_destination_id){
+        let session = this.search_sessions.find(function(s){
+          return s.destination_id == session_destination_id});
+        session.remove_card(card_destination_id);
+      }
     }
   }
 </script>

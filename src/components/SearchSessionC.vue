@@ -5,6 +5,7 @@
       <card-c
         :dot="card.dot"
         :child_cards="card.child_cards"
+        v-on:remove_card_event="removeCardFromSession"
       />
     </div>
     <div class="dot-droppable"></div>
@@ -38,6 +39,12 @@
 
         }
       })
+    },
+    methods:{
+      removeCardFromSession: function(card_destination_id){
+        this.$emit("remove_card_event_by_session", this.search_session.destination_id, card_destination_id);
+        log.debug("removed card: ", card_destination_id, "from session :", this.search_session.destination_id);
+      }
     }
   }
 </script>

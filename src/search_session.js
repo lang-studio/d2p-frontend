@@ -43,12 +43,12 @@ class Card{
         return card;
     }
 
-    contains(dot){
-      if (this.dot.destination_id === dot.destination_id){
+    contains(destination_id){
+      if (this.dot.destination_id === destination_id){
         return true
       } else {
         return this.child_cards.some(function(c){
-          return c.contains(dot)
+          return c.contains(destination_id)
         })
       }
     }
@@ -217,7 +217,7 @@ class SearchSession{
             // if no card is inserted, then append, only when there's no duplicates
           // we should check all nested cards for duplicates
             if (!inserted){
-              if (!this.cards_to_render.some(function(c){return c.contains(dot)})){
+              if (!this.cards_to_render.some(function(c){return c.contains(dot.destination_id)})){
                 this.cards_to_render.push(new_card)
               }
             }
@@ -225,6 +225,10 @@ class SearchSession{
             // ^ should never happen, because we always construct full lineage between session and first drag object
         }
 
+    }
+
+    remove_card(destination_id){
+      console.log("[search_session.js] remove card: ", destination_id);
     }
 
 }
