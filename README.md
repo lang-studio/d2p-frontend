@@ -42,16 +42,19 @@ This spawns a Python process in background. So remember to kill it when you are 
 - methods/variable name: underscore
 
 ### TODO
-- [NEXT] able to remove dragged dots
-- remove dependency on jquery-ui (too big)
-- ~~separate into different css/js files~~
-- ~~autocomplete search input~~
-- ~~drag and drop to list view~~
-- enable links on google map other locations
-- custom destinations
+- search page must have
+    - display nested cards with indent from its parent
+    - test multi search sessions
+    - only active session display droppable zone
+- search page backlog
+    - replace drag/drop by "+" from marker directly
+    - href on session & cards, recenter map and highlight dot
+    - remove dependency on jquery-ui (too big): use Vue.Draggable
+    - custom destinations
 
 ### BUG
 - zoom in, then drag, first drag does not work: can't reproduce...
+- search for same session, will append a new session
 
 
 ### References

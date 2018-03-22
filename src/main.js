@@ -67,7 +67,7 @@ searchSubmitBtn.addEventListener('click', function () {
     rootApp.search_sessions.push(s);
     // update map's active_session
     rootMap.active_session = s;
-
+  
     let resource = app.$resource('http://localhost:3000/search/' + destination_id);
 
     resource.get().then(response => {

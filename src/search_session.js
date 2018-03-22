@@ -53,6 +53,25 @@ class Card{
       }
     }
 
+    remove(destination_id){
+      // remove child card with this destination_id and its child cards
+      if (this.child_cards.length == 0){
+        return false;
+      }
+      // any top level child cards?
+      if (this.child_cards.some(function(c){return c.dot.destination_id == destination_id})){
+        this.child_cards = this.child_cards.filter(function(c){
+          return c.dot.destination_id != destination_id;
+        })
+        return true;
+      }
+      // recursion
+      this.child_cards.forEach(function(c){
+        c.remove(destination_id);
+      })
+      return false;
+    }
+
     insert(card, lineage){
         // update the instance according to lineage if new card is a child at any level, does NOT return a copy
         // return a boolean whether card is updated or not
@@ -228,9 +247,17 @@ class SearchSession{
     }
 
     remove_card(destination_id){
-      console.log("[search_session.js] remove card: ", destination_id);
+      // top level
+      if (this.cards_to_render.some(function(c){return c.dot.destination_id == destination_id})){
+        this.cards_to_render = this.cards_to_render.filter(function(c){
+          return c.dot.destination_id != destination_id;
+        })
+      } else {
+        this.cards_to_render.forEach(function(c){
+          c.remove(destination_id);
+        })
+      }
     }
-
 }
 
 // export class definitions, for test

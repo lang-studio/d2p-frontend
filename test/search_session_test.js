@@ -98,6 +98,34 @@ describe('card', function(){
             assert.equal(actual, true)
             assert(c.child_cards[0].child_cards.length == 1)
         })
+    });
+
+    describe('remove', function(){
+        it('should do nothing when no child cards', function(){
+            let c = new o.Card(new o.Dot(0,0,0), []);
+            c.remove(1);
+            assert(c.child_cards.length == 0);
+        });
+
+        it('should remove toplevel child cards, together with any nested child cards', function(){
+            let c1 = new o.Card(new o.Dot(1,0,0), []);
+            let c2 = new o.Card(new o.Dot(2,0,0), [c1]);
+            let c3 = new o.Card(new o.Dot(3,0,0), [c2]);
+            // remove c2 should remove c1 too
+            c3.remove(2);
+            assert(c3.child_cards.length == 0);
+        });
+
+        it('should remove nested child cards', function(){
+            let c1 = new o.Card(new o.Dot(1,0,0), []);
+            let c2 = new o.Card(new o.Dot(2,0,0), [c1]);
+            let c3 = new o.Card(new o.Dot(3,0,0), [c2]);
+            // remove c1 should keep c2
+            c3.remove(1);
+            assert(c3.child_cards.length == 1);
+            let actual = c3.child_cards[0];
+            assert(actual.child_cards.length == 0);
+        })
     })
 })
 
@@ -314,6 +342,18 @@ describe('search session', function(){
             assert.equal(actual.dot.destination_id, 1);
             assert.equal(actual.child_cards.length, 1);
             assert.equal(actual.child_cards[0].dot.destination_id,2)
+
+        })
+    });
+
+    describe('remove_card', function(){
+        it('should remove top level cards', function(){
+            let s = new o.SearchSession(0, 'test');
+            let c = new o.Card(new o.Dot(0,0,0), []);
+            s.cards_to_render = [c];
+            // remove 0
+            s.remove_card(0);
+            assert(s.cards_to_render.length == 0);
 
         })
     })
