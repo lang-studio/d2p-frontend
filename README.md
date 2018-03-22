@@ -8,7 +8,7 @@ This is NOT an open source project. We do NOT offer any license.
 
 Any unpermitted use may result in litigation. 
 
-## Build Setup
+## Build
 
 ``` bash
 # install dependencies
@@ -19,6 +19,8 @@ npm run dev
 
 # build for production with minification
 npm run build
+// then under dist/, run: 
+python3 -m http.server 8080
 
 # build for production and view the bundle analyzer report
 npm run build --report
@@ -29,9 +31,13 @@ npm test
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-### How to run
-- start `python3 -m http.server` at dev-resources/ directory. This starts a local cdn for images.
-- start `json-server --watch dev-resources/db.json`. This starts a mock json server.
+### How to run dev environment
+
+```bash
+./dev.sh
+```
+
+This spawns a Python process in background. So remember to kill it when you are done. 
 
 ### How to run unit tests
 
@@ -41,20 +47,24 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 - class name: camelCase
 - methods/variable name: underscore
 
-### Naming conventions
-main functionalities:
-- map related
-- autocomplete search: search-*
-
 ### TODO
-- ~~separate into different css/js files~~
-- ~~autocomplete search input~~
-- ~~drag and drop to list view~~
-- enable links on google map other locations
-- custom destinations
+- search page must have
+    - display nested cards with indent from its parent
+    - test multi search sessions
+    - only active session display droppable zone
+- search page backlog
+    - replace drag/drop by "+" from marker directly
+    - href on session & cards, recenter map and highlight dot
+    - remove dependency on jquery-ui (too big): use Vue.Draggable
+    - custom destinations
+
+### BUG
+- zoom in, then drag, first drag does not work: can't reproduce...
+- search for same session, will append a new session
 
 
 ### References
+- [recursive vue components](https://vuejsdevelopers.com/2017/10/23/vue-js-tree-menu-recursive-components/)
 - [drag marker off google map](http://jsfiddle.net/H4Rp2/38/)
 - vue related
     - [vue draggable](https://github.com/SortableJS/Vue.Draggable)

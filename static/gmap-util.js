@@ -3,25 +3,24 @@ InfoWindow.prototype = new google.maps.OverlayView();
 
 function InfoWindow(anchor, d, map) {
     this.anchor_ = anchor;
-    this.image_ = d['thumbnail'];
-    this.name_ = d['name'];
-    this.starRating_ = d['star_rating'];
+    this.image_ = d.enriched_data.thumbnail;
+    this.name_ = d.display_name;
+    this.starRating_ = d.enriched_data.star_rating;
 
     this.div_ = null;
 
     this.setMap(map);
 }
 
-function updateMap(map, data, app1) {
+function redraw(map, markers, dots, app, refit = true) {
 
     const overlays = [];
-    const markers = [];
 
     // add markers and center map
     let bounds = new google.maps.LatLngBounds();
-    for (let i = 0; i < data.length; i++) {
-        const d = data[i];
-        const latLng = new google.maps.LatLng(d['lat'], d['lng']);
+    for (let i = 0; i < dots.length; i++) {
+        const d = dots[i];
+        const latLng = new google.maps.LatLng(d.lat, d.lng);
 
         // prepare popup on mouseover
         overlays.push(new InfoWindow(latLng, d, map));
@@ -35,23 +34,16 @@ function updateMap(map, data, app1) {
             draggable: false,
             flat: true,
             content: contentDiv,
-            id: i
+            id: i,
+            dao:d
         }));
 
         markers[i].addListener('mouseover', function (e) {
             overlays[this.id].show();
-            // disable map draggling
-            map.setOptions({
-                draggable: false
-            });
         });
 
         markers[i].addListener('mouseout', function () {
-            overlays[this.id].hide();
-            // enable map draggling
-            map.setOptions({
-                draggable: true
-            })
+          overlays[this.id].hide();
         });
 
         markers[i].addListener('click', function () {
@@ -59,22 +51,29 @@ function updateMap(map, data, app1) {
             // hide overlay
             overlays[this.id].hide();
             // enable the left pane toggler
-            app1.leftPane.isActive = true;
-            app1.leftPane.showBtn = true;
+            app.leftPane.isActive = true;
+            app.leftPane.showBtn = true;
             // update left info pane values
-            app1.leftPane.name = data[i]['name'];
-            app1.leftPane.description = data[i]['description'];
-            app1.leftPane.thumbnail = data[i]['thumbnail'];
+            app.leftPane.name = dots[i].display_name;
+            app.leftPane.description = dots[i].enriched_data.description;
+            app.leftPane.thumbnail = dots[i].enriched_data.thumbnail;
 
+            map.setOptions({
+              draggable: true
+            });
 
         });
 
         bounds = bounds.extend(latLng);
     }
+
+    // these are only called on first search
+  if (refit){
     map.fitBounds(bounds);
     map.setCenter(bounds.getCenter());
+  }
 
-    setMarkerDraggable(markers);
+  setMarkerDraggable(markers, map);
 
 }
 
@@ -137,16 +136,30 @@ InfoWindow.prototype.show = function () {
     }
 };
 
-function setMarkerDraggable(markers) {
+function setMarkerDraggable(markers, map) {
     $(markers).each(function () {
-        const markerInDOM = this.getContent();
-        $(markerInDOM).attr("destination-id", this.id);
-        $(markerInDOM).addClass('marker-draggable');
-        $(markerInDOM).draggable({
-            zIndex: 2,
-            appendTo: 'body',
-            helper: 'clone',
-            containment: 'body'
-        });
+      const markerInDOM = this.getContent();
+      $(markerInDOM).attr("destination-id", this.dao.destination_id);
+      $(markerInDOM).attr("name", this.dao.display_name);
+      $(markerInDOM).attr("lat", this.dao.lat);
+      $(markerInDOM).attr("lng", this.dao.lng);
+
+      $(markerInDOM).addClass('marker-draggable');
+      $(markerInDOM).draggable({
+          zIndex: 2,
+          appendTo: 'body',
+          helper: 'clone',
+          containment: 'body',
+          start: function(event, ui){
+            map.setOptions({
+              draggable: false
+            });
+          },
+          stop: function(event, ui){
+            map.setOptions({
+              draggable: true
+            });
+          }
+      });
     });
 }

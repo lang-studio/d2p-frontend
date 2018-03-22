@@ -1,22 +1,43 @@
 {
-  "destinations": [
+  "search": [
     {
-      "name": "Glasgow",
-      "lat": 55.8642,
-      "lng": -4.2518,
-      "thumbnail": "http://localhost:8000/images/glasgow-thumbnail.jpeg",
-      "star_rating": 4.9,
-      "description": "A city in Scotland",
-      "id": 1
+      "id": 1,
+      "_comment":"id 1 is scotland",
+      "children": [
+        {
+          "name": "Glasgow",
+          "lat": 55.8642,
+          "lng": -4.2518,
+          "thumbnail": "http://localhost:8000/images/glasgow-thumbnail.jpeg",
+          "star_rating": 4.9,
+          "description": "A city in Scotland",
+          "id": 3
+        },
+        {
+          "name": "Edinburgh",
+          "lat": 55.9533,
+          "lng": -3.1883,
+          "thumbnail": "http://localhost:8000/images/scotland-thumbnail.jpg",
+          "star_rating": 4,
+          "description": "Another city in Scotland",
+          "id": 2
+        }
+      ]
     },
     {
-      "name": "Edinburgh",
-      "lat": 55.9533,
-      "lng": -3.1883,
-      "thumbnail": "http://localhost:8000/images/scotland-thumbnail.jpg",
-      "star_rating": 4,
-      "description": "Another city in Scotland",
-      "id": 2
+      "id": 2,
+      "_comment":"id 2 is Edinburgh",
+      "children": [
+        {
+          "name": "Edinburgh castle",
+          "lat": 55.9486,
+          "lng": -3.1999,
+          "thumbnail": "http://localhost:8000/images/edinburgh-castle-thumbnail.jpg",
+          "star_rating": 4.5,
+          "description": "An 11th-century castle and barracks housing the Crown Jewels and National War Museum of Scotland.",
+          "id": 4
+        }
+      ]
     }
   ]
 }
